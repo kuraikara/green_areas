@@ -1,0 +1,1 @@
+DB_TOKEN = 'postgresql://postgres:yxot@localhost/stage'

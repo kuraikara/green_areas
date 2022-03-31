@@ -5,9 +5,10 @@ from sqlalchemy.orm import sessionmaker
 import json
 
 from models import *
+from config import DB_TOKEN
 
 app = Flask(__name__)
-engine = create_engine('postgresql://postgres:yxot@localhost/stage', echo=True)
+engine = create_engine(DB_TOKEN, echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 

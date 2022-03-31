@@ -1,10 +1,10 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship, backref
 from geoalchemy2 import Geometry
 import json
 import h3
 from shapely.geometry import shape, polygon
-from shapely.geometry.polygon import intersects
 
 from server import engine, session
 
@@ -23,9 +23,10 @@ class H3Area(Base):
 
 class PolygonByH3(Base):
   __tablename__ = 'polygonByH3'
-  polygon = Column(Integer, ForeignKey('polygon.id'), primary_key=True, nullable=False)
-  h3 = Column(String, ForeignKey('h3area.id'), primary_key=True, nullable=False)
-
+  polygon_id = Column(Integer, ForeignKey('polygon.id'), primary_key=True, nullable=False)
+  h3_id = Column(String, ForeignKey('h3area.id'), primary_key=True, nullable=False)
+  polygon = relationship('Polygon')
+  h3 = relationship('H3Area')
 
 def create_tables():
   print( "Creating tables")
@@ -39,9 +40,9 @@ def create_tables():
 
 def drop_tables():
   try:
+    PolygonByH3.__table__.drop(engine)
     Polygon.__table__.drop(engine)
     H3Area.__table__.drop(engine)
-    PolygonByH3.__table__.drop(engine)
     return "Ok"
   except :
     return "Error"
@@ -51,24 +52,48 @@ def insert_polygons_from_geojson(geojson):
     if geojson["type"] == "FeatureCollection":
       polygons = []
       for feature in geojson["features"]:
-        session.add(Polygon(name = feature['properties']['name'], geom = (json.dumps(feature['geometry']))))  
+        add_feature_to_db(feature['geometry'])    
     if geojson["type"] == "Feature":
-          polyfills = h3.polyfill_geojson(geojson['geometry'], 7)
-          intersection = []
-          border = []
-          #print(geojson['geometry'])
-          feature_poly = shape(geojson['geometry'])
-          #print(feature_poly)
-          for h3index in polyfills:
-              h3_poly = polygon.Polygon(h3.h3_to_geo_boundary(h3index))  
-              if h3_poly.intersects(feature_poly):
-                  print("sium")
-                  
-      #session.add(Polygon(name = geojson['properties']['name'], geom = (json.dumps(geojson['geometry']))))
-
-    #session.commit()
+      add_feature_to_db(geojson['geometry'])         
     return "Ok"
   except Exception as e:
     print(e)
     return "Error"
+
+
+def add_feature_to_db(feature):
+          #TODO: Multipoligon or poligon?
+          dbPoly = Polygon(name = feature['properties']['name'], geom = (json.dumps(feature['geometry'])))
+          session.add(dbPoly)
+          polyfills = h3.polyfill_geojson(feature['geometry'], 7)
+          intersection = []
+          border = []
+          feature_poly = shape(feature['geometry'])
+          for h3index in polyfills:
+              h3_poly = polygon.Polygon(h3.h3_to_geo_boundary(h3index, True)) 
+              if (h3_poly.overlaps(feature_poly) == True):
+                  intersection.append(h3index)
+                  border.append(h3index)
+              else:
+                  intersection.append(h3index)
+          while len(border) > 0:
+              h3index = border.pop(0)
+              ring = h3.k_ring(h3index, 1)
+              for neighbor in ring:
+                if (neighbor in intersection) == False:
+                  neighborPoly = polygon.Polygon(h3.h3_to_geo_boundary(neighbor, True))
+                  if (neighborPoly.overlaps(feature_poly) == True):
+                      intersection.append(neighbor)
+                      border.append(neighbor)   
+
+          for index in intersection:
+            print(session.query(H3Area).filter(H3Area.id == index).count())
+            if session.query(H3Area).filter(H3Area.id == index).count() == 0:
+              area = H3Area(id = index, resolution = 7)
+              session.add(area) 
+            assoc = PolygonByH3(polygon = dbPoly, h3_id = index)
+            session.add(assoc)
+
+          session.commit()  
+          return
   
