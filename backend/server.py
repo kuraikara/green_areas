@@ -1,7 +1,6 @@
 from flask import Flask, request
 from flask_cors import cross_origin
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 import json
 
 from models import *
@@ -9,8 +8,7 @@ from config import DB_TOKEN
 
 app = Flask(__name__)
 engine = create_engine(DB_TOKEN, echo=True)
-Session = sessionmaker(bind=engine)
-session = Session()
+
 
 @app.route("/")
 @cross_origin()
@@ -27,10 +25,26 @@ def setupdb():
 def cleardb():
     return drop_tables()
 
+@app.route("/polygon", methods=["GET"])
+@cross_origin()
+def polygon_get():
+    return get_polygons()
+
+@app.route("/h3", methods=["GET"])
+@cross_origin()
+def h3_get():
+    return get_h3()
+
 @app.route("/polygon", methods=["POST"])
 @cross_origin()
 def polygon_post():
     return insert_polygons_from_geojson(request.json)
+
+@app.route("/polygon/<id>", methods=["GET"])
+@cross_origin()
+def polygon_get_by_h3(id):
+    return get_polygon_by_h3(id)
+    
     
 
 
