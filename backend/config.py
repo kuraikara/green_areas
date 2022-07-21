@@ -1,2 +1,2 @@
 DB_TOKEN = 'postgresql://postgres:yxot@localhost/stage'
-RESOLUTION = 7
+RESOLUTION = [6,7]

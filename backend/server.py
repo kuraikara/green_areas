@@ -44,7 +44,11 @@ def polygon_post():
 @cross_origin()
 def polygon_get_by_h3(id):
     return get_polygon_by_h3(id)
-    
+
+@app.route("/polygon/files", methods=["POST"])
+@cross_origin()
+def polygon_post_files():
+    return insert_polygons_from_file('./London')
     
 
 

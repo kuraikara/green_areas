@@ -18,7 +18,7 @@ session = None
 class Polygon(Base):
   __tablename__ = 'polygon'
   id = Column(Integer, primary_key=True)
-  name = Column(String)
+  #name = Column(String)
   geom = Column(Geometry(srid=4326))
 
 class H3Area(Base):
@@ -52,6 +52,17 @@ def drop_tables():
   except :
     return "Error"
 
+
+def insert_polygons_from_file(filename):
+  try:
+    with open(filename) as f:
+      geojson = json.load(f)
+      insert_polygons_from_geojson(geojson)
+    return "Ok"
+  except Exception as e:
+    print(e)
+    return "Error"
+
 def insert_polygons_from_geojson(geojson):
   try:
     if geojson["type"] == "FeatureCollection":
@@ -69,30 +80,31 @@ def insert_polygons_from_geojson(geojson):
 def add_feature_to_db(feature):
   session = Session()
   #TODO: Multipoligon or poligon?
-  dbPoly = Polygon(name = feature['properties']['name'], geom = (json.dumps(feature['geometry'])))
+  dbPoly = Polygon(geom = (json.dumps(feature['geometry'])))
   session.add(dbPoly)
 
-  h3Indexes = h3_intersection_from_geometry(feature['geometry'])
-
+  for res in RESOLUTION:
+    print(res)
+    h3Indexes = h3_intersection_from_geometry(feature['geometry'], res)
   #adding h3 indexes to db and linking them to the polygon
-  for h3Index in h3Indexes:
-    if session.query(H3Area).filter(H3Area.id == h3Index).count() == 0:
-      area = H3Area(id = h3Index, resolution = RESOLUTION)
-      session.add(area) 
-    assoc = PolygonByH3(polygon = dbPoly, h3_id = h3Index)
-    session.add(assoc)
+    for h3Index in h3Indexes:
+      if session.query(H3Area).filter(H3Area.id == h3Index).count() == 0:
+        area = H3Area(id = h3Index, resolution = res)
+        session.add(area) 
+      assoc = PolygonByH3(polygon = dbPoly, h3_id = h3Index)
+      session.add(assoc)
 
   session.commit()
   session.flush()
   session.close()
   return
 
-def h3_intersection_from_geometry(geometry):
+def h3_intersection_from_geometry(geometry, res):
   geometryPoly = shape(geometry) #green area in shapely polygon
   intersection = [] #list of h3 index of intersection with green area
   border = [] #list of h3 index of intersection borders
   geometryPolyCoords = geometryPoly.centroid.coords
-  initH3 = h3.geo_to_h3(geometryPolyCoords[0][1], geometryPolyCoords[0][0], RESOLUTION)
+  initH3 = h3.geo_to_h3(geometryPolyCoords[0][1], geometryPolyCoords[0][0], res)
   print(initH3)
   intersection.append(initH3)
   border.append(initH3)
