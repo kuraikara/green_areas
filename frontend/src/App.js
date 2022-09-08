@@ -22,7 +22,7 @@ function Home() {
   return (
     <>
       <BackgroundImage></BackgroundImage>
-      <Navbar />
+      <Navbar back={false} />
       <main style={{ alignItems: "center" }}>
         <Title style={{ marginTop: "5rem" }}>Welcome to the homepage!</Title>
         <SubTitle>You can do this, I elieve in you.</SubTitle>
@@ -76,7 +76,7 @@ const MapButton = styled(Link)`
 function About() {
   return (
     <>
-      <Navbar />
+      <Navbar back={true} />
       <main>
         <h2>Who are we?</h2>
         <p>That feels like an existential question, don't you think?</p>

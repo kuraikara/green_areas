@@ -1,4 +1,5 @@
 from ast import Return
+from json import JSONDecoder, JSONEncoder
 from flask import Flask, request
 from flask_cors import cross_origin
 from sqlalchemy import create_engine
@@ -51,7 +52,7 @@ def polygon_post():
 @app.route("/city", methods=["POST"])
 @cross_origin()
 def city_post():
-    return add_city(request.args.get('name'))
+    return json.dumps(add_city(request.args.get('name'))) 
 
 @app.route("/polygon/<id>", methods=["GET"])
 @cross_origin()

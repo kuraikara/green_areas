@@ -21,6 +21,7 @@ const Button = styled(Link)`
   color: #fff;
   font-size: 1.5rem;
   text-decoration: none;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
 
   position: absolute;
   top: 1rem;

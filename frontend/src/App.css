@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@200&display=swap");
 
 :root {
-  --primary-green: #315e26;
-  --hover-green: #839e7c;
+  --primary-green: rgb(49, 94, 38);
+  --hover-green: rgb(131, 158, 124);
   --text-primary: #000;
   --primary-background: #f2f5f1;
 }

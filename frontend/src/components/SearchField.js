@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { IoIosSearch } from "react-icons/io";
 import styled from "styled-components";
 
 export default function SearchField({ setGoTo }) {
   const [cities, setCities] = useState([]);
-  const [search, setSearch] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const searchRef = useRef();
 
   useEffect(() => {
     const prom = new Promise((setup) => {
@@ -14,24 +15,45 @@ export default function SearchField({ setGoTo }) {
     });
 
     prom.then((data) => setCities(data));
+
+    document.addEventListener("mousedown", (event) => {
+      if (
+        searchRef.current != null &&
+        !searchRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    });
+    return () => {
+      document.removeEventListener("mousedown", (event) => {});
+    };
   }, []);
 
+  const inputSearch = () => {
+    //richiesta api e go to
+  };
+
+  const updateMap = (coords) => {
+    setGoTo(coords);
+    setIsOpen(false);
+  };
+
   return (
-    <Bar>
-      <Field>
-        <Input
-          type="text"
-          placeholder="Search"
-          onFocus={() => setSearch(cities)}
-          onBlur={() => setSearch([])}
-        />
-        <IoIosSearch />
+    <Bar ref={searchRef}>
+      <Field onClick={() => setIsOpen(true)}>
+        <Input type="text" placeholder="Search" />
+        <Icon />
       </Field>
-      {search.length > 0 && (
+      {isOpen && (
         <List>
           <Separator />
-          {search.map((city, key) => (
-            <ListItem onClick={() => console.log("asdasdasd")} key={key}>
+          {cities.map((city, key) => (
+            <ListItem
+              onClick={() => {
+                updateMap(city.center);
+              }}
+              key={key}
+            >
               {city.name}
             </ListItem>
           ))}
@@ -40,6 +62,15 @@ export default function SearchField({ setGoTo }) {
     </Bar>
   );
 }
+
+const Icon = styled(IoIosSearch)`
+  &:hover {
+    border-radius: 20%;
+    background: var(--primary-green);
+    color: #fff;
+  }
+`;
+
 const Bar = styled.div`
   position: absolute;
   top: 1rem;
@@ -47,6 +78,7 @@ const Bar = styled.div`
   z-index: 100;
   background: #fff;
   border-radius: 1rem;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 `;
 
 const List = styled.div``;

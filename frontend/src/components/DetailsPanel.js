@@ -12,13 +12,13 @@ export default function DetailsPanel(props) {
 }
 
 const CollapsiblePanel = styled.div`
-  z-index: 1000;
+  z-index: 100;
   background-color: #fff;
   position: absolute;
   right: 20px;
   top: 20px;
   border-radius: 1rem;
-  width: 25%;
+  width: 35%;
   height: calc(100vh - 50px);
   text-align: center;
   padding-top: 1rem;
@@ -26,6 +26,7 @@ const CollapsiblePanel = styled.div`
   animation-name: slidein;
   animation-direction: horizontal;
   overflow: hidden;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 
   @keyframes slidein {
     from {
@@ -33,7 +34,26 @@ const CollapsiblePanel = styled.div`
     }
 
     to {
-      width: 25%;
+      width: 35%;
+    }
+  }
+
+  @media screen and (max-width: 1000px) {
+    width: calc(100vw - 40px);
+    left: 20px;
+    height: 40%;
+    bottom: 20px;
+    top: auto;
+    animation-direction: vertical;
+
+    @keyframes slidein {
+      from {
+        height: 0%;
+      }
+
+      to {
+        height: 40%;
+      }
     }
   }
 `;

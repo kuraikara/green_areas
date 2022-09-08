@@ -71,7 +71,7 @@ def insert_polygons_from_file(city, filename):
   try:
     print(filename)
     print(city)
-    add_city(city)
+    dbCity = add_city(city)
     with open(filename) as f:
       geojson = json.load(f)
       insert_polygons_from_geojson(geojson, dbCity)
@@ -190,9 +190,14 @@ def get_city():
 def add_city(name):
   session = Session()
   query = session.query(City).filter(City.name == name)
-  print(query)
-  ''' dbCity = City(name=name, center='POINT(-0.666085 51.42553)')
+  if(query.count() != 0): 
+    print("CITTA")
+    session.close()
+    print (query[0]) 
+    return query[0]
+
+  dbCity = City(name=name, center='POINT(-0.666085 51.42553)')
   session.add(dbCity)
   session.commit()
-  session.close() '''
-  return query.__str__()
+  session.close()
+  return dbCity

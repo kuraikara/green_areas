@@ -1,22 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { NavLink as Link } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 
-export default function Navbar() {
+export default function Navbar({ back }) {
   return (
     <>
-      <Nav>
-        <NavLink to="/">
+      <Nav back={back ? 1 : 0}>
+        <NavLink back={back ? 1 : 0} to="/">
           <h1>Logo</h1>
         </NavLink>
         <Bars />
         <NavMenu>
-          <NavLink to="/">Mappa</NavLink>
-          <NavLink to="/about">ABOUT</NavLink>
+          <NavLink back={back ? 1 : 0} to="/">
+            Mappa
+          </NavLink>
+          <NavLink back={back ? 1 : 0} to="/about">
+            ABOUT
+          </NavLink>
         </NavMenu>
         <NavBtn>
-          <NavBtnLink to="/map">Mappa</NavBtnLink>
+          <NavBtnLink back={back ? 1 : 0} to="/map">
+            Mappa
+          </NavBtnLink>
         </NavBtn>
       </Nav>
     </>
@@ -24,7 +30,7 @@ export default function Navbar() {
 }
 
 const Nav = styled.nav`
-  background: transparent;
+  background: ${({ back }) => (back ? "#000" : "transparent")};
   height: 80px;
   display: flex;
   justify-content: space-between;
@@ -35,7 +41,8 @@ const Nav = styled.nav`
 const NavLink = styled(Link)`
   font-size: 1.2em;
   font-weight: bold;
-  color: #fff;
+  color: ${({ back }) =>
+    back == true ? "var(--hover-green);" : "var(--primary-green);"};
   height: 100%;
   display: flex;
   align-items: center;
@@ -44,16 +51,17 @@ const NavLink = styled(Link)`
   text-decoration: none;
 
   &.active {
-    color: var(--primary-green);
+    color: #fff;
   }
 
   &:hover {
-    color: var(--primary-green);
+    transition: all 0.5s ease-in-out;
+    color: #fff;
   }
 `;
 
 const Bars = styled(FaBars)`
-  color: #000;
+  color: #fff;
   display: none;
 
   @media screen and (max-width: 768px) {
@@ -87,20 +95,20 @@ const NavBtn = styled.nav`
 `;
 
 const NavBtnLink = styled(Link)`
-  border-radius: 1rem;
-  //background: #256c31;
-  background: var(--blue);
-  padding: 10px 22px;
+  padding: 15px 22px;
   color: #fff;
+  background: var(--primary-green);
   border: none;
   outline: none;
+  border-radius: 1rem;
+  margin-right: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.5s ease-in-out;
   text-decoration: none;
 
   &:hover {
     transition: all 0.2s ease-in-out;
     background: #fff;
-    color: #010606;
+    color: var(--primary-green);
   }
 `;
