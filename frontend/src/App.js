@@ -24,7 +24,7 @@ function Home() {
       <BackgroundImage></BackgroundImage>
       <Navbar back={false} />
       <main style={{ alignItems: "center" }}>
-        <Title style={{ marginTop: "5rem" }}>Welcome to the homepage!</Title>
+        <Title>Welcome to the homepage!</Title>
         <SubTitle>You can do this, I elieve in you.</SubTitle>
         <MapButton to="/map">Visualizza la mappa</MapButton>
       </main>
@@ -45,11 +45,23 @@ const Title = styled.h1`
   font-weight: 900;
   font-size: 3rem;
   color: #fff;
+  padding: 0 1rem;
+  margin-top: 5rem;
+
+  @media screen and (max-width: 768px) {
+    font-size: 2rem;
+  }
+
+  @media screen and (max-width: 300px) {
+    font-size: 2rem;
+    margin-top: 2rem;
+  }
 `;
 
 const SubTitle = styled.h3`
   text-align: center;
   margin-top: 2rem;
+  padding: 0 1rem;
 `;
 
 const MapButton = styled(Link)`
@@ -57,8 +69,8 @@ const MapButton = styled(Link)`
   justify-content: center;
   margin: 2rem auto 0 auto;
   display: block;
-  padding: 1rem 0;
-  width: 20%;
+  width: fit-content;
+  padding: 1rem 1rem;
   background: var(--primary-green);
   border-radius: 1rem;
   border: 0;

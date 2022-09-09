@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import DeckGL from "@deck.gl/react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { H3HexagonLayer } from "@deck.gl/geo-layers";
 import { StaticMap } from "react-map-gl";
-import { kRing, geoToH3 } from "h3-js";
-import DetailsPanel from "../DetailsPanel";
+import { kRing, geoToH3, h3ToChildren } from "h3-js";
 import { LinearInterpolator } from "@deck.gl/core";
+import { MapContext } from "../../MapPage";
+import axios from "axios";
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN =
@@ -13,18 +14,17 @@ const MAPBOX_ACCESS_TOKEN =
 
 // Viewport settings
 
-function GreenMap({
-  indexes,
-  setPolygonDetails,
-  selectedPolygon,
-  goTo,
-  setGoTo,
-}) {
-  //const [h3Map, setH3Map] = useState(indexes);
+function GreenMap({ indexes }) {
+  const {
+    setPolygonDetails,
+    polygonDetails: selectedPolygon,
+    goTo,
+    setGoTo,
+  } = useContext(MapContext);
   const [viewState, setViewState] = useState({
     longitude: 7.6436,
     latitude: 45.069,
-    zoom: 14,
+    zoom: 15,
     pitch: 0,
     bearing: 0,
   });
@@ -33,20 +33,119 @@ function GreenMap({
   const [addedPolygonsIds, setAddedPolygonsIds] = useState(new Set());
   const [selectedPolygonLayer, setSelectedPolygonLayer] = useState(null);
   const [updateView, setUpdateView] = useState(true);
-  const [isMobile, setIsMobile] = useState(
+  /* const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 1000px)")
-  );
+  ); */
+  const getResolutionByZoom = (zoom) => {
+    if (viewState.zoom >= 15) return 8;
+    else if (viewState.zoom >= 14) return 7;
+    else if (viewState.zoom >= 13) return 6;
+    else return null;
+  };
 
-  window.addEventListener("resize", () => {
-    setIsMobile(window.matchMedia("(max-width: 1000px)"));
-  });
-
-  useEffect(() => {
-    setAddedPolygonsIds(new Set());
-    setLayer([]);
-  }, []);
+  const setLoadedH3 = (index, res) => {
+    h3Indexes.set(index, { loaded: true });
+    if (res == 6) {
+      let children = h3ToChildren(index, 7);
+      children.push(h3ToChildren(index, 8));
+      children.forEach((child) => {
+        if (!h3Indexes.has(child)) {
+          h3Indexes.set(child, { loaded: true });
+        }
+      });
+    } else if (res == 7) {
+      let children = h3ToChildren(index, 8);
+      children.forEach((child) => {
+        if (!h3Indexes.has(child)) {
+          h3Indexes.set(child, { loaded: true });
+        }
+      });
+    }
+  };
 
   const checkPrefetchH3Areas = () => {
+    const res = getResolutionByZoom(viewState.zoom);
+
+    const centeredH3 = geoToH3(viewState.latitude, viewState.longitude, res);
+
+    const prefetchH3 = kRing(centeredH3, 2);
+
+    prefetchH3.forEach((h3) => {
+      if (h3Indexes.has(h3) && h3Indexes.get(h3).loaded == false) {
+        setLoadedH3(h3, res);
+        console.log("prefetching");
+        fetchPolygons(h3);
+      }
+    });
+  };
+
+  const fetchPolygons = async (h3Index) => {
+    axios
+      .get(`http://localhost:5000/polygon/${h3Index}`)
+      .then((res) => {
+        //await setLoadedPolygons(data, res);
+        const newlayer = getNewFilteredLayer(h3Index, res.data);
+        setLayer((prev) => [...prev, newlayer]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getNewFilteredLayer = (index, data) => {
+    const filtered = data.filter(
+      (poly) => !addedPolygonsIds.has(poly.properties.id)
+    );
+
+    var set = addedPolygonsIds;
+
+    if (filtered.length == 0) return;
+    filtered.forEach((poly) => set.add(poly.properties.id));
+    setAddedPolygonsIds(set);
+
+    return new GeoJsonLayer({
+      id: index,
+      data: filtered,
+      pickable: true,
+      stroked: false,
+      filled: true,
+      extruded: true,
+      pointType: "circle",
+      lineWidthScale: 20,
+      lineWidthMinPixels: 2,
+      getFillColor: [131, 158, 124, 100],
+      getPointRadius: 100,
+      getElevation: 0,
+      getLineWidth: 1,
+      autoHighlight: true,
+      highlightColor: [131, 158, 124],
+      onClick: (info, event) => {
+        setPolygonDetails(info.object.properties);
+        setSelectedPolygonLayer(
+          new GeoJsonLayer({
+            data: info.object,
+            pickable: false,
+            stroked: false,
+            filled: true,
+            extruded: true,
+            pointType: "circle",
+            lineWidthScale: 20,
+            lineWidthMinPixels: 2,
+            getFillColor: [49, 94, 38, 255],
+            getPointRadius: 100,
+            getElevation: 0,
+            getLineWidth: 1,
+          })
+        );
+        goToPoly(
+          info.object.properties.center.coordinates,
+          info.object.properties.area
+        );
+      },
+    });
+  };
+
+  /*const checkPrefetchH3Areas = () => {
     let res;
     if (viewState.zoom >= 15) res = 8;
     else if (viewState.zoom >= 14) res = 7;
@@ -54,11 +153,27 @@ function GreenMap({
     else return;
 
     const h3 = geoToH3(viewState.latitude, viewState.longitude, res);
-    let visionH3Indexes = kRing(h3, 1);
+    let visionH3Indexes = kRing(h3, 2);
     visionH3Indexes.forEach((index) => {
       if (h3Indexes.has(index) && h3Indexes.get(index).loaded == false) {
         h3Indexes.set(index, { loaded: true });
         //TODO: settare anche le risoluzioni più piccole
+        if (res == 6) {
+          let children = h3ToChildren(index, 7);
+          children.push(h3ToChildren(index, 8));
+          children.forEach((child) => {
+            if (!h3Indexes.has(child)) {
+              h3Indexes.set(child, { loaded: true });
+            }
+          });
+        } else if (res == 7) {
+          let children = h3ToChildren(index, 8);
+          children.forEach((child) => {
+            if (!h3Indexes.has(child)) {
+              h3Indexes.set(child, { loaded: true });
+            }
+          });
+        }
 
         const prom = new Promise((setup) => {
           fetch("http://localhost:5000/polygon/" + index, {
@@ -82,7 +197,7 @@ function GreenMap({
             ...prev,
             new GeoJsonLayer({
               id: index,
-              data: data,
+              data: filtered,
               pickable: true,
               stroked: false,
               filled: true,
@@ -98,7 +213,6 @@ function GreenMap({
               highlightColor: [131, 158, 124],
               onClick: (info, event) => {
                 setPolygonDetails(info.object.properties);
-                console.log(info.object);
                 setSelectedPolygonLayer(
                   new GeoJsonLayer({
                     data: info.object,
@@ -125,7 +239,7 @@ function GreenMap({
         });
       }
     });
-  };
+  }; */
 
   const goToPoly = (coords, area) => {
     let zoom = 11;
@@ -148,16 +262,13 @@ function GreenMap({
     }
 
     setUpdateView(false);
-    console.log(isMobile);
     const height = window.innerHeight;
     const width = window.innerWidth;
+    const isMobile = width < 1000;
     let long;
     let lat;
     const unit = 2 ** zoom;
-    if (isMobile.matches) {
-      console.log(height);
-      console.log(height / 4);
-      console.log(height / 4 / unit);
+    if (isMobile) {
       long = coords[0];
       lat = coords[1] - height / 10 / unit;
     } else {
@@ -211,6 +322,8 @@ function GreenMap({
       style={{
         position: "relative",
         display: "flex",
+        minWidth: "100%",
+        minHeight: "100vh",
         width: "100%",
         height: "100vh",
         maxWidth: "100%",
@@ -223,9 +336,9 @@ function GreenMap({
         initialViewState={viewState}
         controller={true}
         layers={selectedPolygon ? [...layer, selectedPolygonLayer] : [...layer]}
-        _typedArrayManagerProps={
+        /* _typedArrayManagerProps={
           isMobile ? { overAlloc: 1, poolSize: 0 } : null
-        }
+        } */
         getTooltip={({ object }) =>
           object && {
             html: `<h2>${object.properties.id}</h2><div>${object.message}</div>`,

@@ -1,29 +1,36 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { IoIosSearch } from "react-icons/io";
 import styled from "styled-components";
+import { MapContext } from "../MapPage";
+import useAxios from "../hooks/useAxios";
+import axios from "../apis/greenServer";
 
-export default function SearchField({ setGoTo }) {
-  const [cities, setCities] = useState([]);
+export default function SearchField() {
   const [isOpen, setIsOpen] = useState(false);
   const searchRef = useRef();
 
+  const { setGoTo } = useContext(MapContext);
+  const should = useRef(true);
+
+  const [cities, error, loading] = useAxios({
+    axiosInstance: axios,
+    method: "GET",
+    url: "/city",
+  });
+
   useEffect(() => {
-    const prom = new Promise((setup) => {
-      fetch("http://localhost:5000/city", { method: "GET" })
-        .then((res) => res.json())
-        .then((data) => setup(data));
-    });
-
-    prom.then((data) => setCities(data));
-
-    document.addEventListener("mousedown", (event) => {
-      if (
-        searchRef.current != null &&
-        !searchRef.current.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
-    });
+    if (should.current) {
+      should.current = false;
+      console.log("search");
+      document.addEventListener("mousedown", (event) => {
+        if (
+          searchRef.current != null &&
+          !searchRef.current.contains(event.target)
+        ) {
+          setIsOpen(false);
+        }
+      });
+    }
     return () => {
       document.removeEventListener("mousedown", (event) => {});
     };
@@ -92,6 +99,7 @@ const Separator = styled.div`
 const ListItem = styled.div`
   padding: 0.5rem 1rem 0.5rem 1.5rem;
   font-size: 1rem;
+  cursor: pointer;
 
   &:hover {
     background: var(--hover-green);
