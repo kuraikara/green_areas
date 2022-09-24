@@ -1,6 +1,6 @@
 from ast import Return
 from json import JSONDecoder, JSONEncoder
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import cross_origin
 from sqlalchemy import create_engine
 import sys
@@ -11,13 +11,14 @@ from models import *
 from config import DB_TOKEN
 
 app = Flask(__name__)
+#app.config.from_envvar('APP_CONFIG')
 engine = create_engine(DB_TOKEN, echo=True)
 
 
 @app.route("/")
 @cross_origin()
 def hello():
-    return "Hello"
+    return jsonify("Hello")
 
 @app.route("/setupdb")
 @cross_origin()

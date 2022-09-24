@@ -2,15 +2,16 @@
 
   
 
-## Seguire le seguenti sezioni
+#### Seguire le seguenti sezioni
 
   
 
-### Configurare il database
+### Configurare il database 
+## IMPORTANTE FARLO PRIMA DI INSTALLARE IL SERVER!
 
 - Creare un server postgis
 
-- Nel file config.py inserire la chiave del proprio db (DB_TOKEN) nel formato: postgresql://<UTENTE(default: postgres)>:<PASSWORD>@localhost/<NOMEDB>
+- Nel file backend/.flaskenv inserire la chiave del proprio db (DB_TOKEN) nel formato: postgresql://<UTENTE(default: postgres)>:<PASSWORD>@localhost/<NOMEDB>
 
   
 
@@ -22,29 +23,16 @@
 
 ### Avviare il server: solo dopo aver installato il server come sopra
 
-1. Avviare il programma start.bat nella cartella backend
+- Avviare il programma start.bat nella cartella backend
+### Infine
+- All'apertura del server vengono già create le tabelle con un utente amministratore
+- Sul sito ci si può loggare con utente: admin, password: admin
+- Una volta loggato dal bottone account in alto a destra > admin page > database è possibile pulire il db, crearlo, e inserire le tre città (ATTENZIONE! bisogna prima aver caricato i tre file delle città nella cartella backend/files) 
+- L'upload del file non è ancora funzionante
 
-2. Questo avvierà il server con due prompt:
-
-	- Uno specifico di debug del server
-
-	- Uno per l'inserimento di comandi come: 
-		*  setup: crea tabelle 
-		*  clear: svuota il DB 
-		*  turin: carica nel db la città di Torino
-		*  london: carica nel db la città di Londra
-		*  sanremo: carica nel db la città di Sanremo
-
-  
-
-## Log
-
-  
-
-- Piccola grafica con routing di prova
-
-- importazione di lazy loading per caricamento reattivo
-
-- caricamento aree sulla mappa parametrizzate da scegliere risoluzioni
-
-- TODO: formattare il codice della mappa con oppurtuni metodi
+## Doing
+- Account management con pagina Admin basilare
+- Inizio creazione pagina utente e profili pubblici
+- Inizio aggiunta like ai parchi e storicizzazione nella pagina utente
+- Prime idee sul raggiungimento di un singolo poligono tra quelli salvati
+- Possibilità di seguire altri utenti e vedere le sue attività

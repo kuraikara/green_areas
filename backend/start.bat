@@ -1,1 +1,1 @@
-.\env\Scripts\activate && python commands.py
+.\env\Scripts\activate && flask run
