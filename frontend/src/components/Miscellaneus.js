@@ -30,8 +30,8 @@ export const ProfileHeader = ({ user }) => {
 	console.log(user);
 	return (
 		<ProfileBox>
-			<ProfileImage img={user.img} width={"150px"} height={"150px"} />
-			<ProfileName>{user.user}</ProfileName>
+			<ProfileImage img={user?.img} width={"150px"} height={"150px"} />
+			<ProfileName>{user?.user}</ProfileName>
 		</ProfileBox>
 	);
 };

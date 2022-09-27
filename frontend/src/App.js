@@ -26,11 +26,12 @@ export default function App() {
 						<Route path="map" element={<MapPage />} />
 						<Route path="about" element={<About />} />
 						<Route path="login" element={<Login />} />
-						<Route path="/user" element={<User />} />
+
 						<Route path="unauthorized" element={<Unauthorized />} />
 
 						<Route element={<RequireAuth allowedRole={"admin"} />}>
 							<Route path="admin" element={<Admin />} />
+							<Route path="/user" element={<User />} />
 						</Route>
 					</Route>
 				</Route>
