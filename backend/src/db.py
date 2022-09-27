@@ -9,6 +9,7 @@ import h3
 from shapely.geometry import shape, polygon, Point
 import os
 from werkzeug.security import generate_password_hash
+from flask_jwt_extended import get_jwt_identity
 
 #RESOLUTION = os.environ.get('RESOLUTION')
 RESOLUTION = [6, 7 , 8]
@@ -26,6 +27,7 @@ class Polygon(Base):
     center = Column(Geometry('POINT'), nullable=False)
     area = Column(Float)
     city_id = Column(Integer, ForeignKey('city.id'), nullable=False)
+    name = Column(String(100), nullable=False, default='Nome poly')
     def __repr__(self):
         return f"Polygon('{self.id}')"
 
@@ -101,6 +103,10 @@ def create_tables():
           admin = User(username="admin", email="admin@localhost", password=generate_password_hash("admin"), role="admin")
           session.add(admin)
           session.commit()
+    if Like.__table__.exists(engine) is False:
+          Like.__table__.create(engine)
+    if Follow.__table__.exists(engine) is False:
+          Follow.__table__.create(engine)
     session.close()
     return "Ok", 200
 
@@ -116,6 +122,10 @@ def drop_tables():
           City.__table__.drop(engine)
         if User.__table__.exists(engine):
           User.__table__.drop(engine)
+        if Like.__table__.exists(engine):
+          Like.__table__.drop(engine)
+        if Follow.__table__.exists(engine):
+          Follow.__table__.drop(engine)
         return "Ok"
     except :
         return "Error"
@@ -259,5 +269,3 @@ def add_city(name):
   query = session.query(City).filter(City.name == name).first()
   session.close()
   return query.id
-
-

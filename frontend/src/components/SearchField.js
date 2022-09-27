@@ -4,133 +4,134 @@ import styled from "styled-components";
 import { MapContext } from "../MapPage";
 import useAxios from "../hooks/useAxios";
 import axios from "../apis/greenServer";
+import useMap from "../hooks/useMap";
 
 export default function SearchField() {
-  const [isOpen, setIsOpen] = useState(false);
-  const searchRef = useRef();
+	const [isOpen, setIsOpen] = useState(false);
+	const searchRef = useRef();
 
-  const { setGoTo } = useContext(MapContext);
-  const should = useRef(true);
+	const { setGoTo } = useMap();
+	const should = useRef(true);
 
-  const [cities, error, loading] = useAxios({
-    axiosInstance: axios,
-    method: "GET",
-    url: "/city",
-  });
+	const [cities, error, loading] = useAxios({
+		axiosInstance: axios,
+		method: "GET",
+		url: "/city",
+	});
 
-  useEffect(() => {
-    if (should.current) {
-      should.current = false;
-      console.log("search");
-      document.addEventListener("mousedown", (event) => {
-        if (
-          searchRef.current != null &&
-          !searchRef.current.contains(event.target)
-        ) {
-          setIsOpen(false);
-        }
-      });
-    }
-    return () => {
-      document.removeEventListener("mousedown", (event) => {});
-    };
-  }, []);
+	useEffect(() => {
+		if (should.current) {
+			should.current = false;
+			console.log("search");
+			document.addEventListener("mousedown", (event) => {
+				if (
+					searchRef.current != null &&
+					!searchRef.current.contains(event.target)
+				) {
+					setIsOpen(false);
+				}
+			});
+		}
+		return () => {
+			document.removeEventListener("mousedown", (event) => {});
+		};
+	}, []);
 
-  const inputSearch = () => {
-    //richiesta api e go to
-  };
+	const inputSearch = () => {
+		//richiesta api e go to
+	};
 
-  const updateMap = (coords) => {
-    setGoTo(coords);
-    setIsOpen(false);
-  };
+	const updateMap = (coords) => {
+		setGoTo(coords);
+		setIsOpen(false);
+	};
 
-  return (
-    <Bar ref={searchRef}>
-      <Field onClick={() => setIsOpen(true)}>
-        <Input type="text" placeholder="Search" />
-        <Icon />
-      </Field>
-      {isOpen && (
-        <List>
-          <Separator />
-          {cities.map((city, key) => (
-            <ListItem
-              onClick={() => {
-                updateMap(city.center);
-              }}
-              key={key}
-            >
-              {city.name}
-            </ListItem>
-          ))}
-        </List>
-      )}
-    </Bar>
-  );
+	return (
+		<Bar ref={searchRef}>
+			<Field onClick={() => setIsOpen(true)}>
+				<Input type="text" placeholder="Search" />
+				<Icon />
+			</Field>
+			{isOpen && (
+				<List>
+					<Separator />
+					{cities.map((city, key) => (
+						<ListItem
+							onClick={() => {
+								updateMap(city.center);
+							}}
+							key={key}
+						>
+							{city.name}
+						</ListItem>
+					))}
+				</List>
+			)}
+		</Bar>
+	);
 }
 
 const Icon = styled(IoIosSearch)`
-  &:hover {
-    border-radius: 20%;
-    background: var(--primary-green);
-    color: #fff;
-  }
+	&:hover {
+		border-radius: 20%;
+		background: var(--primary-green);
+		color: #fff;
+	}
 `;
 
 const Bar = styled.div`
-  position: absolute;
-  top: 1rem;
-  left: 8rem;
-  z-index: 100;
-  background: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+	position: absolute;
+	top: 1rem;
+	left: 8rem;
+	z-index: 100;
+	background: #fff;
+	border-radius: 1rem;
+	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 `;
 
 const List = styled.div``;
 
 const Separator = styled.div`
-  height: 0.1rem;
-  background: var(--primary-green);
-  opacity: 0.2;
+	height: 0.1rem;
+	background: var(--primary-green);
+	opacity: 0.2;
 `;
 
 const ListItem = styled.div`
-  padding: 0.5rem 1rem 0.5rem 1.5rem;
-  font-size: 1rem;
-  cursor: pointer;
+	padding: 0.5rem 1rem 0.5rem 1.5rem;
+	font-size: 1rem;
+	cursor: pointer;
 
-  &:hover {
-    background: var(--hover-green);
-    border-radius: 1rem;
-    color: #fff;
-  }
+	&:hover {
+		background: var(--hover-green);
+		border-radius: 1rem;
+		color: #fff;
+	}
 `;
 
 const Field = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1rem 0.5rem 1rem;
+	display: flex;
+	align-items: center;
+	padding: 0.5rem 1rem 0.5rem 1rem;
 
-  border: 0;
-  color: var(--primary-green);
-  font-size: 1.5rem;
-  text-decoration: none;
+	border: 0;
+	color: var(--primary-green);
+	font-size: 1.5rem;
+	text-decoration: none;
 
-  &:hover {
-    border-radius: 1rem;
-    background: #fff;
-    color: var(--primary-green);
-  }
+	&:hover {
+		border-radius: 1rem;
+		background: #fff;
+		color: var(--primary-green);
+	}
 `;
 
 const Input = styled.input`
-  border: 0;
-  font-size: 1rem;
-  padding: 0.5rem;
+	border: 0;
+	font-size: 1rem;
+	padding: 0.5rem;
 
-  &:focus {
-    outline: none;
-  }
+	&:focus {
+		outline: none;
+	}
 `;

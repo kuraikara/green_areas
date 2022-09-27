@@ -34,8 +34,6 @@ export default function Login() {
 				JSON.stringify({ username: user, password: pwd }),
 				{
 					headers: { "Content-Type": "application/json" },
-					/* 					withCredentials: true,
-					 */ credentials: "same-origin",
 				}
 			);
 			console.log(JSON.stringify(res));

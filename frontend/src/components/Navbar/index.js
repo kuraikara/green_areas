@@ -70,7 +70,9 @@ export default function Navbar({ back }) {
 								</AccountBtn>
 
 								<AccountOptions openaccount={openAccount ? 1 : 0}>
-									<AccountOption>My Profile</AccountOption>
+									<AccountOption onClick={() => nav("/user")}>
+										My Profile
+									</AccountOption>
 									<Separator />
 									{auth?.role == "admin" && (
 										<>

@@ -5,6 +5,7 @@ from src.db import *
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from src.admin import admin
+from src.social import social
 from datetime import timedelta
 
 
@@ -22,7 +23,7 @@ def create_app(test_config=None):
             JWT_TOKEN_LOCATION = ['headers','cookies'],
             JWT_SESSION_COOKIE = False,
             JWT_COOKIE_CSRF_PROTECT = False,
-            JWT_ACCESS_TOKEN_EXPIRES = timedelta(seconds=10),
+            #JWT_ACCESS_TOKEN_EXPIRES = timedelta(seconds=10),
             #JWT_REFRESH_TOKEN_EXPIRES = 20,
         )
     else:
@@ -82,7 +83,8 @@ def create_app(test_config=None):
 
     app.register_blueprint(auth)
     app.register_blueprint(admin)
+    app.register_blueprint(social)
 
-    setupdb()
+    #setupdb()
         
     return app
