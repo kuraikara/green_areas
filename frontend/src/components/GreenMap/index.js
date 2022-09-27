@@ -6,7 +6,7 @@ import { StaticMap } from "react-map-gl";
 import { kRing, geoToH3, h3ToChildren } from "h3-js";
 import { LinearInterpolator } from "@deck.gl/core";
 import { MapContext } from "../../MapPage";
-import axios from "axios";
+import axios from "../../apis/greenServer";
 import useMap from "../../hooks/useMap";
 
 // Set your mapbox access token here

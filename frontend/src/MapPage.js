@@ -10,11 +10,30 @@ import useMap from "./hooks/useMap";
 //const Map = lazy(() => import("./components/Map"));
 
 export default function MapPage() {
-	const [indexes, error, loading, refetch] = useAxios({
+	/* const [indexes, error, loading, refetch] = useAxios({
 		axiosInstance: axios,
 		method: "GET",
 		url: "/h3",
-	});
+	}); */
+
+	const [loading, setLoading] = useState(true);
+	const [indexes, setIndexes] = useState([]);
+	const [error, setError] = useState("");
+
+	const fetchIndexes = async () => {
+		try {
+			const res = await axios.get("/h3");
+			setIndexes(res.data);
+		} catch (err) {
+			setError(err.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchIndexes();
+	}, []);
 	/* const options = {
     enableHighAccuracy: true,
     timeout: 5000,
