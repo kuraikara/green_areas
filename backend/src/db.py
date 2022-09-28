@@ -269,3 +269,16 @@ def add_city(name):
   query = session.query(City).filter(City.name == name).first()
   session.close()
   return query.id
+
+def get_polygon_by_id(id):
+  print(id)
+
+  session = Session()
+  query = session.query(ST_AsGeoJSON(Polygon)).filter(Polygon.id == id).first()
+
+  print(query)
+
+  data = json.loads(list(query)[0])
+  session.close()
+  return json.dumps(data)
+

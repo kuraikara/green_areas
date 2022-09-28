@@ -41,9 +41,13 @@ def create_app(test_config=None):
     def cleardb():
         return drop_tables()
 
-    @app.route("/polygon", methods=["GET"])
-    def polygon_get():
+    @app.route("/polygons", methods=["GET"])
+    def polygons_get():
         return get_polygons()
+
+    @app.route("/polygon/<id>", methods=["GET"])
+    def polygon_get(id):
+        return get_polygon_by_id(id), 200
 
     @app.route("/h3", methods=["GET"])
     def h3_get():
@@ -61,11 +65,11 @@ def create_app(test_config=None):
     def city_post():
         return json.dumps(add_city(request.args.get('name'))) 
 
-    @app.route("/polygon/<id>", methods=["GET"])
+    @app.route("/polygons/<id>", methods=["GET"])
     def polygon_get_by_h3(id):
         return get_polygon_by_h3(id)
 
-    @app.route("/polygon/file", methods=["POST"])
+    @app.route("/polygons/file", methods=["POST"])
     def polygon_post_files():
         print(request.args.get('name'))
         print( request.args.get('file'))

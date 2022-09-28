@@ -6,6 +6,8 @@ import styled from "styled-components";
 import RequireAuth from "./components/RequireAuth";
 import Admin from "./pages/Admin";
 import User from "./pages/User";
+import RedirectMap from "./pages/RedirectMap";
+import Ranking from "./pages/Ranking";
 
 import Layout from "./components/Layout";
 
@@ -26,9 +28,9 @@ export default function App() {
 						<Route path="map" element={<MapPage />} />
 						<Route path="about" element={<About />} />
 						<Route path="login" element={<Login />} />
-
+						<Route path="redirect" element={<RedirectMap />} />
 						<Route path="unauthorized" element={<Unauthorized />} />
-
+						<Route path="tops" element={<Ranking />} />
 						<Route element={<RequireAuth allowedRole={"admin"} />}>
 							<Route path="admin" element={<Admin />} />
 							<Route path="/user" element={<User />} />

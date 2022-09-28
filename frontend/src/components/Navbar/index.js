@@ -42,6 +42,9 @@ export default function Navbar({ back }) {
 					<NavLink back={back ? 1 : 0} to="/about">
 						ABOUT
 					</NavLink>
+					<NavLink back={back ? 1 : 0} to="/tops">
+						TOPS
+					</NavLink>
 				</NavMenu>
 				<div style={{ display: "flex", flexDirection: "row" }}>
 					<NavBtn>

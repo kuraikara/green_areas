@@ -7,6 +7,8 @@ import { FaShareAlt } from "react-icons/fa";
 import useMap from "../hooks/useMap";
 import { Loader } from "./Miscellaneus";
 
+import { BASE_URL } from "../apis/greenServer";
+
 import {
 	MdOutlineExpandLess,
 	MdOutlineExpandMore,
@@ -22,6 +24,7 @@ export default function DetailsPanel() {
 	const [likes, setLikes] = useState(0);
 	const [liked, setLiked] = useState(false);
 	const [loading, setLoading] = useState(true);
+	const [copied, setCopied] = useState(false);
 
 	const fetchLikes = async () => {
 		try {
@@ -97,6 +100,14 @@ export default function DetailsPanel() {
 		}
 	};
 
+	const share = (id) => {
+		navigator.clipboard.writeText("http://localhost:3000/redirect?id=" + id);
+		setCopied(true);
+		setTimeout(() => {
+			setCopied(false);
+		}, 2000);
+	};
+
 	return (
 		<CollapsiblePanel ref={panelRef} expanded={expanded}>
 			<CloseIcon
@@ -134,7 +145,8 @@ export default function DetailsPanel() {
 							)}
 						</Button>
 						<Button>
-							<ShareIcon />
+							<ShareIcon onClick={() => share(polygonDetails.properties.id)} />
+							{copied && <SharedAlert>Copied!</SharedAlert>}
 						</Button>
 					</LikeShareButtons>
 				</>
@@ -256,4 +268,34 @@ const LikedIcon = styled(AiFillHeart)`
 const ShareIcon = styled(FaShareAlt)`
 	font-size: 2.5rem;
 	color: black;
+`;
+
+const SharedAlert = styled.div`
+	position: absolute;
+	width: 50%;
+	top: 100%;
+	left: 25%;
+	font-size: 1rem;
+	font-weight: 900;
+	padding: 0.5rem 0;
+	color: var(--primary-green);
+	background-color: #000;
+	animation-duration: 2s;
+	animation-name: slideinout;
+	animation-direction: horizontal;
+	animation-iteration-count: 1;
+	border-radius: 0.5rem;
+	@keyframes slideinout {
+		from {
+			opacity: 0%;
+		}
+
+		to {
+			opacity: 0%;
+		}
+
+		50% {
+			opacity: 100%;
+		}
+	}
 `;
