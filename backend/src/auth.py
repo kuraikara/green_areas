@@ -21,7 +21,7 @@ def login():
         if is_password_correct:
             reflesh_token = create_refresh_token(identity=user.id)
             access_token = create_access_token(identity=user.id)
-            response = jsonify({'access_token': access_token, 'refresh_token': reflesh_token, 'username': user.username, 'role':user.role })
+            response = jsonify({'access_token': access_token, 'refresh_token': reflesh_token, 'username': user.username, 'role':user.role, 'img': user.img })
             set_refresh_cookies(response, reflesh_token)
             response.status_code = 200
             return response
@@ -29,8 +29,9 @@ def login():
 
 @auth.post('/logout')
 def logout():
-    #unset_jwt_cookies(response)
-    return 'logout'
+    response = jsonify({'message': 'Successfully logged out'})
+    unset_jwt_cookies(response)
+    return response
 
 @auth.post('/token/refresh')
 @jwt_required(refresh=True)

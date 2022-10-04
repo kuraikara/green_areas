@@ -4,14 +4,19 @@ import styled from "styled-components";
 import { Button, Loader } from "../../components/Miscellaneus";
 import useMap from "../../hooks/useMap";
 import { useNavigate } from "react-router-dom";
+import { ListBox, Row, Item } from "../miscellaneous/List";
+import { BiMap } from "react-icons/bi";
+import { IoHeartDislikeSharp } from "react-icons/io5";
+import useAuth from "../../hooks/useAuth";
 
-function Likes() {
+function Likes({ username }) {
 	const [likes, setLikes] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const axiosPrivate = useAxiosPrivate();
 	const should = useRef(true);
 	const { setPolygonDetails } = useMap();
 	const nav = useNavigate();
+	const { auth } = useAuth();
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -20,7 +25,7 @@ function Likes() {
 
 			const fetchLikes = async () => {
 				try {
-					const response = await axiosPrivate.get("/social/likes", {
+					const response = await axiosPrivate.get(`/social/likes/${username}`, {
 						signal: controller.signal,
 					});
 					setLikes(response.data.likes);
@@ -46,8 +51,7 @@ function Likes() {
 				params: { polygon_id: id },
 			});
 			console.log(response.data);
-			response.data.success &&
-				setLikes(likes.filter((like) => like.properties.id !== id));
+			setLikes(likes.filter((like) => like.properties.id !== id));
 		} catch (error) {
 			console.error(error);
 		}
@@ -60,45 +64,60 @@ function Likes() {
 	};
 
 	return (
-		<LikesBox>
-			<SubTitle>Your liked places</SubTitle>
+		<>
 			{loading && <Loader />}
 			{!loading && likes.length === 0 && <div>No likes</div>}
 			{!loading && likes.length > 0 && (
-				<ul>
-					{likes.map((like) => (
-						<Like key={like.properties.id} like={like}>
-							<div>{like.properties.id + " Name"}</div>
-							<div>
-								<Button onClick={() => unLike(like.properties.id)}>
-									Unlike
-								</Button>
-								<Button onClick={() => viewOnMap(like)}>View Park</Button>
-							</div>
-						</Like>
-					))}
-				</ul>
+				<ListBox>
+					{likes.map((like, index) => {
+						return (
+							<Row key={index}>
+								<Item>
+									<div>{like.name + " " + like.id}</div>
+									<Buttons>
+										{auth.username == username && (
+											<Unlike onClick={() => unLike(like.id)} />
+										)}
+										<Goto onClick={() => viewOnMap(like)} />
+									</Buttons>
+								</Item>
+							</Row>
+						);
+					})}
+				</ListBox>
 			)}
-		</LikesBox>
+		</>
 	);
 }
-const LikesBox = styled.div`
-	background-color: #fff;
-`;
-const SubTitle = styled.h3`
-	padding: 2rem 0;
-	text-align: center;
-	background-color: #fff;
+
+const Buttons = styled.div`
+	display: flex;
+	gap: 3rem;
+
+	& > * {
+		cursor: pointer;
+		border-radius: 50%;
+		padding: 0.5rem;
+		font-size: 3rem;
+		transition: all 0.5s ease-in-out;
+	}
 `;
 
-const Like = styled.li`
-	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
-	align-items: center;
-	padding: 0.5rem;
-	border-bottom: 1px solid #ccc;
-	background-color: #fff;
+const Unlike = styled(IoHeartDislikeSharp)`
+	color: #ff0000;
+
+	&:hover {
+		color: #fff;
+		background-color: #ff0000;
+	}
+`;
+const Goto = styled(BiMap)`
+	color: #000;
+
+	&:hover {
+		color: #fff;
+		background-color: #000;
+	}
 `;
 
 export default Likes;

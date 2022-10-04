@@ -4,6 +4,7 @@ import { NavLink as Link, useNavigate } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import { MdAccountBox, MdPerson } from "react-icons/md";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 export default function Navbar({ back }) {
 	const { auth } = useAuth();
@@ -11,6 +12,7 @@ export default function Navbar({ back }) {
 	const should = useRef(true);
 	const accountRef = useRef();
 	const nav = useNavigate();
+	const axiosPrivate = useAxiosPrivate();
 
 	useEffect(() => {
 		if (should.current) {
@@ -28,6 +30,14 @@ export default function Navbar({ back }) {
 			document.removeEventListener("mousedown", (event) => {});
 		};
 	}, []);
+
+	const logOut = async () => {
+		const response = await axiosPrivate.post("/auth/logout");
+		console.log(response);
+		if (response.status === 200) {
+			window.location.reload();
+		}
+	};
 	return (
 		<>
 			<Nav back={back ? 1 : 0}>
@@ -44,6 +54,9 @@ export default function Navbar({ back }) {
 					</NavLink>
 					<NavLink back={back ? 1 : 0} to="/tops">
 						TOPS
+					</NavLink>
+					<NavLink back={back ? 1 : 0} to="/user/admin">
+						Profile
 					</NavLink>
 				</NavMenu>
 				<div style={{ display: "flex", flexDirection: "row" }}>
@@ -89,7 +102,9 @@ export default function Navbar({ back }) {
 										Settings
 									</AccountOption>
 									<Separator />
-									<AccountOption>Log Out</AccountOption>
+									<AccountOption onClick={() => logOut()}>
+										Log Out
+									</AccountOption>
 								</AccountOptions>
 							</AccountBox>
 						</NavBtn>

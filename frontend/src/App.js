@@ -8,6 +8,8 @@ import Admin from "./pages/Admin";
 import User from "./pages/User";
 import RedirectMap from "./pages/RedirectMap";
 import Ranking from "./pages/Ranking";
+import Profile from "./pages/Profile";
+import Register from "./pages/Register";
 
 import Layout from "./components/Layout";
 
@@ -28,12 +30,17 @@ export default function App() {
 						<Route path="map" element={<MapPage />} />
 						<Route path="about" element={<About />} />
 						<Route path="login" element={<Login />} />
+						<Route path="register" element={<Register />} />
 						<Route path="redirect" element={<RedirectMap />} />
 						<Route path="unauthorized" element={<Unauthorized />} />
 						<Route path="tops" element={<Ranking />} />
-						<Route element={<RequireAuth allowedRole={"admin"} />}>
+						<Route element={<RequireAuth allowedRoles={["admin"]} />}>
 							<Route path="admin" element={<Admin />} />
+						</Route>
+
+						<Route element={<RequireAuth allowedRoles={["admin", "user"]} />}>
 							<Route path="/user" element={<User />} />
+							<Route path="/user/:username" element={<Profile />} />
 						</Route>
 					</Route>
 				</Route>

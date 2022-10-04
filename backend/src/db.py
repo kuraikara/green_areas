@@ -27,7 +27,7 @@ class Polygon(Base):
     center = Column(Geometry('POINT'), nullable=False)
     area = Column(Float)
     city_id = Column(Integer, ForeignKey('city.id'), nullable=False)
-    name = Column(String(100), nullable=False, default='Nome poly')
+    name = Column(String(100), nullable=False, default='Name poly')
     def __repr__(self):
         return f"Polygon('{self.id}')"
 
@@ -66,12 +66,15 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     role = Column(String(10), nullable=False)
+    img = Column(String(255), nullable=False, default='https://via.placeholder.com/150')
 
 class Like(Base):
     __tablename__ = 'like'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     polygon_id = Column(Integer, ForeignKey('polygon.id'), nullable=False)
+    polygon = relationship('Polygon')
+    user = relationship('User')
 
     def __repr__(self):
         return f"Like('{self.id}', '{self.user_id}', '{self.polygon_id}')"
@@ -79,8 +82,10 @@ class Like(Base):
 class Follow(Base):
     __tablename__ = 'follow'
     id = Column(Integer, primary_key=True)
-    follower_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    followed_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user = relationship("User", foreign_keys=[user_id])
+    followed = relationship("User", foreign_keys=[followed_id])
 
     def __repr__(self):
         return f"Follow('{self.id}', '{self.user_id}', '{self.city_id}')"
@@ -101,7 +106,9 @@ def create_tables():
     session = Session()
     if session.query(User).filter_by(username="admin").first() is None:
           admin = User(username="admin", email="admin@localhost", password=generate_password_hash("admin"), role="admin")
+          user = User(username="user1", email="user1@localhost", password=generate_password_hash("user1"), role="user")
           session.add(admin)
+          session.add(user)
           session.commit()
     if Like.__table__.exists(engine) is False:
           Like.__table__.create(engine)
@@ -114,18 +121,19 @@ def drop_tables():
     try:
         if PolygonByH3.__table__.exists(engine):
           PolygonByH3.__table__.drop(engine)
+        if Like.__table__.exists(engine):
+              Like.__table__.drop(engine)
         if Polygon.__table__.exists(engine):
           Polygon.__table__.drop(engine)
         if H3Area.__table__.exists(engine):
           H3Area.__table__.drop(engine)
         if City.__table__.exists(engine):
           City.__table__.drop(engine)
-        if User.__table__.exists(engine):
-          User.__table__.drop(engine)
-        if Like.__table__.exists(engine):
-          Like.__table__.drop(engine)
         if Follow.__table__.exists(engine):
           Follow.__table__.drop(engine)
+        if User.__table__.exists(engine):
+          User.__table__.drop(engine)
+        
         return "Ok"
     except :
         return "Error"

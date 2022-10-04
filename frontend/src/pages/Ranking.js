@@ -1,5 +1,6 @@
 import React from "react";
-import { Tabs, List } from "../components/Miscellaneus";
+import Tabs from "../components/miscellaneous/Tabs";
+import { RankList } from "../components/miscellaneous/List";
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import useAuth from "../hooks/useAuth";
@@ -50,30 +51,17 @@ const World50 = () => {
 					</Item>
 				</Row>
 			</List> */}
-			<List items={[1, 2]}>
-				<Rank>ciao</Rank>
-			</List>
+			<RankList
+				rank
+				items={[
+					{ id: 1, name: "John Doe", score: 100 },
+					{ id: 2, name: "Prova", score: 150 },
+					{ id: 3, name: "Prova", score: 150 },
+				]}
+			></RankList>
 		</>
 	);
 };
-
-const Rank = styled.div`
-	font-size: 3rem;
-	font-weight: 900;
-	${({ first }) => (first ? "color: gold;" : "")}
-	${({ second }) => (second ? "color: silver;" : "")}
-    ${({ third }) => (third ? "color: brown;" : "")}
-`;
-
-const Name = styled.div`
-	font-size: 1.5rem;
-	font-weight: 900;
-`;
-
-const Score = styled.div`
-	font-size: 1.5rem;
-	font-weight: 900;
-`;
 
 const Heart = styled(AiFillHeart)`
 	color: red;

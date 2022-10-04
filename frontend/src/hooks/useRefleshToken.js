@@ -15,7 +15,7 @@ export default function useRefleshToken() {
 				...prev,
 				accessToken: response.data.access_token,
 				role: response.data.role,
-				user: response.data.username,
+				username: response.data.username,
 			};
 		});
 		return response.data.access_token;

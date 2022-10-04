@@ -150,7 +150,7 @@ function GreenMap({ indexes }) {
 
 	const fetchPolygons = async (h3Index) => {
 		axios
-			.get(`http://localhost:5000/polygons/${h3Index}`)
+			.get(`/polygons/${h3Index}`)
 			.then((res) => {
 				//await setLoadedPolygons(data, res);
 				const newlayer = getNewFilteredLayer(h3Index, res.data);

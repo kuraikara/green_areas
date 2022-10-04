@@ -33,7 +33,7 @@ function Database() {
 		console.log(res);
 	};
 	const loadTurin = async () => {
-		const res = await axios.post("/polygon/file", null, {
+		const res = await axios.post("/polygons/file", null, {
 			params: {
 				name: "Turin",
 				file: "./files/Turin",
@@ -42,7 +42,7 @@ function Database() {
 		console.log(res);
 	};
 	const loadLondon = async () => {
-		const res = await axios.post("/polygon/file", null, {
+		const res = await axios.post("/polygons/file", null, {
 			params: {
 				name: "London",
 				file: "./files/London",
@@ -51,7 +51,7 @@ function Database() {
 		console.log(res);
 	};
 	const loadSanremo = async () => {
-		const res = await axios.post("/polygon/file", null, {
+		const res = await axios.post("/polygons/file", null, {
 			params: {
 				name: "Sanremo",
 				file: "./files/Sanremo",

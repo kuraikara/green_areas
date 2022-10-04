@@ -71,7 +71,7 @@ export default function SearchField() {
 	);
 }
 
-const Icon = styled(IoIosSearch)`
+export const Icon = styled(IoIosSearch)`
 	&:hover {
 		border-radius: 20%;
 		background: var(--primary-green);
@@ -79,25 +79,25 @@ const Icon = styled(IoIosSearch)`
 	}
 `;
 
-const Bar = styled.div`
+export const Bar = styled.div`
 	position: absolute;
-	top: 1rem;
-	left: 8rem;
+	/* top: 1rem;
+	left: 8rem; */
 	z-index: 100;
 	background: #fff;
 	border-radius: 1rem;
 	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 `;
 
-const List = styled.div``;
+export const List = styled.div``;
 
-const Separator = styled.div`
+export const Separator = styled.div`
 	height: 0.1rem;
 	background: var(--primary-green);
 	opacity: 0.2;
 `;
 
-const ListItem = styled.div`
+export const ListItem = styled.div`
 	padding: 0.5rem 1rem 0.5rem 1.5rem;
 	font-size: 1rem;
 	cursor: pointer;
@@ -109,7 +109,7 @@ const ListItem = styled.div`
 	}
 `;
 
-const Field = styled.div`
+export const Field = styled.div`
 	display: flex;
 	align-items: center;
 	padding: 0.5rem 1rem 0.5rem 1rem;
@@ -126,7 +126,7 @@ const Field = styled.div`
 	}
 `;
 
-const Input = styled.input`
+export const Input = styled.input`
 	border: 0;
 	font-size: 1rem;
 	padding: 0.5rem;
