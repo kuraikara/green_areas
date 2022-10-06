@@ -5,9 +5,10 @@ import { Button, Loader } from "../../components/Miscellaneus";
 import useMap from "../../hooks/useMap";
 import { useNavigate } from "react-router-dom";
 import { ListBox, Row, Item } from "../miscellaneous/List";
-import { BiMap } from "react-icons/bi";
-import { IoHeartDislikeSharp } from "react-icons/io5";
+
 import useAuth from "../../hooks/useAuth";
+
+import { ButtonGroup, UnlikeButton, GoToButton} from '../miscellaneous/Buttons'
 
 function Likes({ username }) {
 	const [likes, setLikes] = useState([]);
@@ -68,56 +69,37 @@ function Likes({ username }) {
 			{loading && <Loader />}
 			{!loading && likes.length === 0 && <div>No likes</div>}
 			{!loading && likes.length > 0 && (
+				<ListContainer>
 				<ListBox>
 					{likes.map((like, index) => {
 						return (
 							<Row key={index}>
 								<Item>
 									<div>{like.name + " " + like.id}</div>
-									<Buttons>
+									<ButtonGroup>
 										{auth.username == username && (
-											<Unlike onClick={() => unLike(like.id)} />
+											<UnlikeButton onClick={() => unLike(like.id)} />
 										)}
-										<Goto onClick={() => viewOnMap(like)} />
-									</Buttons>
+										<GoToButton onClick={() => viewOnMap(like)} />
+									</ButtonGroup>
 								</Item>
 							</Row>
 						);
 					})}
 				</ListBox>
+				</ListContainer>
 			)}
 		</>
 	);
 }
 
-const Buttons = styled.div`
-	display: flex;
-	gap: 3rem;
 
-	& > * {
-		cursor: pointer;
-		border-radius: 50%;
-		padding: 0.5rem;
-		font-size: 3rem;
-		transition: all 0.5s ease-in-out;
-	}
+
+const ListContainer = styled.div`
+	width: 75%;
+	margin: auto;
 `;
 
-const Unlike = styled(IoHeartDislikeSharp)`
-	color: #ff0000;
 
-	&:hover {
-		color: #fff;
-		background-color: #ff0000;
-	}
-`;
-const Goto = styled(BiMap)`
-	color: #000;
-
-	&:hover {
-		color: #fff;
-		background-color: #000;
-	}
-`;
 
 export default Likes;

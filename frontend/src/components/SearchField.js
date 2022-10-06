@@ -101,6 +101,10 @@ export const ListItem = styled.div`
 	padding: 0.5rem 1rem 0.5rem 1.5rem;
 	font-size: 1rem;
 	cursor: pointer;
+	display:flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items:center;
 
 	&:hover {
 		background: var(--hover-green);

@@ -62,12 +62,12 @@ export const ListBox = styled.div`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	width: 65%;
+	width: 100%;
 	margin: 0 auto;
 `;
 
 export const Row = styled.div`
-	padding: 1.5rem 3rem;
+	padding: 1rem;
 	background: #fff;
 	border-radius: 1rem;
 	margin-top: 1rem;

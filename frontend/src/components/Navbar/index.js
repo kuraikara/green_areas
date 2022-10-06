@@ -39,7 +39,7 @@ export default function Navbar({ back }) {
 		}
 	};
 	return (
-		<>
+
 			<Nav back={back ? 1 : 0}>
 				<NavLink back={back ? 1 : 0} to="/">
 					<h1>Logo</h1>
@@ -111,7 +111,7 @@ export default function Navbar({ back }) {
 					)}
 				</div>
 			</Nav>
-		</>
+		
 	);
 }
 
@@ -122,6 +122,8 @@ const Nav = styled.nav`
 	justify-content: space-between;
 	padding: 0.5rem calc((100vw - 1000px) / 2);
 	z-index: 10;
+	position: sticky;
+	top:0;
 `;
 
 const NavLink = styled(Link)`

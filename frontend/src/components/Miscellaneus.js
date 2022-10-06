@@ -17,8 +17,9 @@ const ProfileBox = styled.div`
 	width: 100%;
 	display: flex;
 	align-items: center;
-	flex-direction: row;
-	padding: 1rem 20%;
+	justify-content: center;
+	flex-direction: column;
+	padding: 1rem;
 	margin-bottom: 2rem;
 `;
 
@@ -39,7 +40,7 @@ const ImgBox = styled.div`
 	${({ height }) => "height: " + height + ";"};
 	border-radius: 50%;
 	overflow: hidden;
-	margin: 2rem;
+	margin: 1rem 2rem;
 	img {
 		width: 100%;
 		height: 100%;
