@@ -39,79 +39,75 @@ export default function Navbar({ back }) {
 		}
 	};
 	return (
-
-			<Nav back={back ? 1 : 0}>
+		<Nav back={back ? 1 : 0}>
+			<NavLink back={back ? 1 : 0} to="/">
+				<h1>Logo</h1>
+			</NavLink>
+			<Bars />
+			<NavMenu>
 				<NavLink back={back ? 1 : 0} to="/">
-					<h1>Logo</h1>
+					Mappa
 				</NavLink>
-				<Bars />
-				<NavMenu>
-					<NavLink back={back ? 1 : 0} to="/">
+				<NavLink back={back ? 1 : 0} to="/about">
+					ABOUT
+				</NavLink>
+				<NavLink back={back ? 1 : 0} to="/tops">
+					TOPS
+				</NavLink>
+				<NavLink back={back ? 1 : 0} to="/feeds">
+					Feeds
+				</NavLink>
+			</NavMenu>
+			<div style={{ display: "flex", flexDirection: "row" }}>
+				<NavBtn>
+					<NavBtnLink back={back ? 1 : 0} to="/map">
 						Mappa
-					</NavLink>
-					<NavLink back={back ? 1 : 0} to="/about">
-						ABOUT
-					</NavLink>
-					<NavLink back={back ? 1 : 0} to="/tops">
-						TOPS
-					</NavLink>
-					<NavLink back={back ? 1 : 0} to="/user/admin">
-						Profile
-					</NavLink>
-				</NavMenu>
-				<div style={{ display: "flex", flexDirection: "row" }}>
+					</NavBtnLink>
+				</NavBtn>
+				{!auth ? (
 					<NavBtn>
-						<NavBtnLink back={back ? 1 : 0} to="/map">
-							Mappa
+						<NavBtnLink back={back ? 1 : 0} to="/login">
+							Log In
 						</NavBtnLink>
 					</NavBtn>
-					{!auth ? (
-						<NavBtn>
-							<NavBtnLink back={back ? 1 : 0} to="/login">
-								Log In
-							</NavBtnLink>
-						</NavBtn>
-					) : (
-						<NavBtn>
-							<AccountBox ref={accountRef}>
-								<AccountBtn
-									openaccount={openAccount ? 1 : 0}
-									onClick={() => setOpenAccount(true)}
-								>
-									{auth?.img ? (
-										<img />
-									) : (
-										<AccountIcon openaccount={openAccount ? 1 : 0} />
-									)}
-								</AccountBtn>
+				) : (
+					<NavBtn>
+						<AccountBox ref={accountRef}>
+							<AccountBtn
+								openaccount={openAccount ? 1 : 0}
+								onClick={() => setOpenAccount(true)}
+							>
+								{auth?.img ? (
+									<img />
+								) : (
+									<AccountIcon openaccount={openAccount ? 1 : 0} />
+								)}
+							</AccountBtn>
 
-								<AccountOptions openaccount={openAccount ? 1 : 0}>
-									<AccountOption onClick={() => nav("/user")}>
-										My Profile
-									</AccountOption>
-									<Separator />
-									{auth?.role == "admin" && (
-										<>
-											<AccountOption onClick={() => nav("/admin")}>
-												Admin Page
-											</AccountOption>
-											<Separator />
-										</>
-									)}
-									<AccountOption onClick={() => nav("/settings")}>
-										Settings
-									</AccountOption>
-									<Separator />
-									<AccountOption onClick={() => logOut()}>
-										Log Out
-									</AccountOption>
-								</AccountOptions>
-							</AccountBox>
-						</NavBtn>
-					)}
-				</div>
-			</Nav>
-		
+							<AccountOptions openaccount={openAccount ? 1 : 0}>
+								<AccountOption onClick={() => nav("/user")}>
+									My Profile
+								</AccountOption>
+								<Separator />
+								{auth?.role == "admin" && (
+									<>
+										<AccountOption onClick={() => nav("/admin")}>
+											Admin Page
+										</AccountOption>
+										<Separator />
+									</>
+								)}
+								<AccountOption onClick={() => nav("/settings")}>
+									Settings
+								</AccountOption>
+								<Separator />
+								<AccountOption onClick={() => logOut()}>Log Out</AccountOption>
+							</AccountOptions>
+						</AccountBox>
+					</NavBtn>
+				)}
+			</div>
+		</Nav>
 	);
 }
 
@@ -123,7 +119,7 @@ const Nav = styled.nav`
 	padding: 0.5rem calc((100vw - 1000px) / 2);
 	z-index: 10;
 	position: sticky;
-	top:0;
+	top: 0;
 `;
 
 const NavLink = styled(Link)`

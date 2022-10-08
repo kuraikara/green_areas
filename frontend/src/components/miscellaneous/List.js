@@ -80,3 +80,19 @@ export const Item = styled.div`
 	align-items: center;
 	padding: ${({ first }) => (first ? " 1rem 3rem;" : "0 3rem")};
 `;
+
+export const Placeholder = (state) => {
+	return (
+		<Row>
+			<Item>
+				<PlaceholderContainer>{state.children}</PlaceholderContainer>
+			</Item>
+		</Row>
+	);
+};
+
+const PlaceholderContainer = styled.div`
+	width: 100%;
+	text-align: center;
+	font-size: 1rem;
+`;

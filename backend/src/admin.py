@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 import validators
-from src.db import User, Session
+from src.db import User, Session, Polygon, Follow, Like
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
+import random
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -36,3 +37,30 @@ def user():
     if user is None or user.role != 'admin':
         response = jsonify({'message': 'No permission'})
         return response, 404
+
+@admin.post('/fakedata')
+@jwt_required()
+def fakedata():
+    session = Session()
+    users =[]
+    polygons = session.query(Polygon).all()
+    print(polygons)
+    for n in range(20):
+        user = User(username=f'User{n}', email=f'User{n}@email.com', password=generate_password_hash('password'))
+        users.append(user)
+        session.add(user)
+    session.commit()
+    for user in users:
+        for n in range(20):
+            print()
+            like = Like(user_id=user.id, polygon_id=random.choice(polygons).id)
+            session.add(like)
+
+    for user in users:
+        for n in range(10):
+            follow = Follow(user_id=user.id, followed_id=random.choice(users).id)
+            session.add(follow)
+    session.commit()
+    session.close()
+    return {'message': 'success'}, 200
+        

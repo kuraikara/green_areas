@@ -1,18 +1,18 @@
 import { Outlet } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import useRefleshToken from "../hooks/useRefleshToken";
+import useRefreshToken from "../hooks/useRefreshToken";
 import useAuth from "../hooks/useAuth";
 
 export default function PersistentLogin() {
 	const { auth } = useAuth();
 	const [loading, setLoading] = useState(true);
-	const reflesh = useRefleshToken();
+	const reflesh = useRefreshToken();
 	const should = useRef(true);
 
 	useEffect(() => {
 		if (should.current) {
 			should.current = false;
-			const verifyRefleshToken = async () => {
+			const verifyRefreshToken = async () => {
 				try {
 					await reflesh();
 				} catch (error) {
@@ -21,7 +21,7 @@ export default function PersistentLogin() {
 					setLoading(false);
 				}
 			};
-			!auth?.accessToken ? verifyRefleshToken() : setLoading(false);
+			!auth?.accessToken ? verifyRefreshToken() : setLoading(false);
 		}
 	}, []);
 

@@ -1,100 +1,91 @@
 import styled from "styled-components";
 import { BiMap } from "react-icons/bi";
 import { IoHeartDislikeSharp } from "react-icons/io5";
-import {MdPersonRemoveAlt1} from "react-icons/md"
-import {RiUserHeartFill,RiUserLocationFill,RiUserUnfollowFill,RiUserFollowFill} from "react-icons/ri"
+import { MdPersonRemoveAlt1 } from "react-icons/md";
+import {
+	RiUserHeartFill,
+	RiUserLocationFill,
+	RiUserUnfollowFill,
+	RiUserFollowFill,
+} from "react-icons/ri";
 
 export const ButtonGroup = styled.div`
 	display: flex;
 	gap: 1rem;
 `;
 
-export const UnlikeButton = ()=>{
-	
-	return(
-		<Container color={"red"}>
+export const UnlikeButton = ({ onClick }) => {
+	return (
+		<Container onClick={() => onClick()} color={"red"}>
 			<UnlikeIcon />
 			<Text>unlike</Text>
 		</Container>
 	);
-	
-}
+};
 
-export const UnfollowButton = ({onClick})=>{
-	
-	return(
-		<Container onClick={()=> onClick()} color={"red"}>
+export const UnfollowButton = ({ onClick }) => {
+	return (
+		<Container onClick={() => onClick()} color={"red"}>
 			<UnfollowIcon />
 			<Text>unfollow</Text>
 		</Container>
 	);
-	
-}
+};
 
-export const FollowButton = ()=>{
-	
-	return(
-		<Container color={"green"}>
+export const FollowButton = ({ onClick }) => {
+	return (
+		<Container onClick={() => onClick()} color={"green"}>
 			<FollowIcon />
 			<Text>follow</Text>
 		</Container>
 	);
-	
-}
+};
 
-export const AlreadyFollowedButton = ()=>{
-	
-	return(
-		<AlreadyContainer >
+export const AlreadyFollowedButton = () => {
+	return (
+		<AlreadyContainer>
 			<AlreadyFollowedIcon />
 			<Text>followed</Text>
 		</AlreadyContainer>
 	);
-	
-}
+};
 
-
-export const GoToButton = ()=>{
-	
-	return(
-		<Container color={"black"}>
+export const GoToButton = ({ onClick }) => {
+	return (
+		<Container onClick={() => onClick()} color={"black"}>
 			<GoToIcon />
 			<Text>view on map</Text>
 		</Container>
 	);
-	
-}
+};
 
-export const ViewProfileButton = ()=>{
-	
-	return(
+export const ViewProfileButton = () => {
+	return (
 		<Container color={"black"}>
 			<ViewProfileIcon />
 			<Text>view profile</Text>
 		</Container>
 	);
-	
-}
+};
 
-const Container = styled.button`
+const Container = styled.div`
 	display: flex;
-	flex-direction:row;
+	flex-direction: row;
 	align-items: center;
 	justify-content: center;
 	padding: 0.75rem;
-	${({ color }) => ("border: 1px solid " + color + ";")}
+	${({ color }) => "border: 1px solid " + color + ";"}
 	border-radius: 0.5rem;
 	gap: 0.25rem;
 	cursor: pointer;
 	transition: all 0.5s ease-in-out;
-	
 
 	& > * {
-		${({ color }) => ("color: " + color + ";")}
+		${({ color }) => "color: " + color + ";"}
 	}
 
-	&:hover{
-		${({ color }) => ("background: " + color + ";")}
+	&:hover {
+		${({ color }) => "background: " + color + ";"}
 
 		& > * {
 			color: #fff;
@@ -103,21 +94,18 @@ const Container = styled.button`
 `;
 const AlreadyContainer = styled.div`
 	display: flex;
-	flex-direction:row;
+	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	padding:0.5rem;
+	padding: 0.5rem;
 	border-radius: 0.5rem;
 	gap: 0.1rem;
 	cursor: pointer;
 	transition: all 0.5s ease-in-out;
-	
 
 	& > * {
 		color: blue;
 	}
-
-	
 `;
 const UnlikeIcon = styled(IoHeartDislikeSharp)`
 	font-size: 1.5rem;
@@ -128,26 +116,20 @@ const UnfollowIcon = styled(RiUserUnfollowFill)`
 `;
 
 const ViewProfileIcon = styled(RiUserLocationFill)`
-font-size: 1.5rem;
-`; 
+	font-size: 1.5rem;
+`;
 
 const FollowIcon = styled(RiUserHeartFill)`
 	font-size: 1.5rem;
 `;
 
 const AlreadyFollowedIcon = styled(RiUserFollowFill)`
-font-size: 1.5rem;
+	font-size: 1.5rem;
 `;
-
-
 
 const Text = styled.p`
-font-size: 1rem;
+	font-size: 1rem;
 `;
-
-
-
-
 
 const GoToIcon = styled(BiMap)`
 	font-size: 1.5rem;

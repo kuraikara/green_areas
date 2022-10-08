@@ -10,6 +10,7 @@ import RedirectMap from "./pages/RedirectMap";
 import Ranking from "./pages/Ranking";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
+import Feeds from "./pages/Feeds";
 
 import Layout from "./components/Layout";
 
@@ -41,6 +42,7 @@ export default function App() {
 						<Route element={<RequireAuth allowedRoles={["admin", "user"]} />}>
 							<Route path="/user" element={<User />} />
 							<Route path="/user/:username" element={<Profile />} />
+							<Route path="/feeds" element={<Feeds />} />
 						</Route>
 					</Route>
 				</Route>

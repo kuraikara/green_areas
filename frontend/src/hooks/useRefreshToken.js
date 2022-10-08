@@ -1,7 +1,7 @@
 import axios from "../apis/greenServer";
 import useAuth from "./useAuth";
 
-export default function useRefleshToken() {
+export default function useRefreshToken() {
 	const { setAuth } = useAuth();
 
 	const refresh = async () => {

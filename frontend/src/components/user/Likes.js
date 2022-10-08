@@ -4,18 +4,22 @@ import styled from "styled-components";
 import { Button, Loader } from "../../components/Miscellaneus";
 import useMap from "../../hooks/useMap";
 import { useNavigate } from "react-router-dom";
-import { ListBox, Row, Item } from "../miscellaneous/List";
+import { ListBox, Row, Item, Placeholder } from "../miscellaneous/List";
 
 import useAuth from "../../hooks/useAuth";
 
-import { ButtonGroup, UnlikeButton, GoToButton} from '../miscellaneous/Buttons'
+import {
+	ButtonGroup,
+	UnlikeButton,
+	GoToButton,
+} from "../miscellaneous/Buttons";
 
 function Likes({ username }) {
 	const [likes, setLikes] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const axiosPrivate = useAxiosPrivate();
 	const should = useRef(true);
-	const { setPolygonDetails } = useMap();
+	const { redirectTo } = useMap();
 	const nav = useNavigate();
 	const { auth } = useAuth();
 
@@ -47,59 +51,56 @@ function Likes({ username }) {
 	}, []);
 
 	const unLike = async (id) => {
+		setLoading(true);
 		try {
 			const response = await axiosPrivate.post("/social/unlike", null, {
 				params: { polygon_id: id },
 			});
 			console.log(response.data);
-			setLikes(likes.filter((like) => like.properties.id !== id));
+			console.log(likes);
+			setLikes(likes.filter((like) => like.id !== id));
 		} catch (error) {
 			console.error(error);
+		} finally {
+			setLoading(false);
 		}
-	};
-
-	const viewOnMap = (poly) => {
-		console.log(poly);
-		setPolygonDetails(poly);
-		nav("/map");
 	};
 
 	return (
 		<>
 			{loading && <Loader />}
-			{!loading && likes.length === 0 && <div>No likes</div>}
-			{!loading && likes.length > 0 && (
-				<ListContainer>
+
+			<ListContainer>
 				<ListBox>
-					{likes.map((like, index) => {
-						return (
-							<Row key={index}>
-								<Item>
-									<div>{like.name + " " + like.id}</div>
-									<ButtonGroup>
-										{auth.username == username && (
-											<UnlikeButton onClick={() => unLike(like.id)} />
-										)}
-										<GoToButton onClick={() => viewOnMap(like)} />
-									</ButtonGroup>
-								</Item>
-							</Row>
-						);
-					})}
+					{!loading && likes.length === 0 && (
+						<Placeholder>No likes</Placeholder>
+					)}
+					{!loading &&
+						likes.length > 0 &&
+						likes.map((like, index) => {
+							return (
+								<Row key={index}>
+									<Item>
+										<div>{like.name + " " + like.id}</div>
+										<ButtonGroup>
+											{auth.username == username && (
+												<UnlikeButton onClick={() => unLike(like.id)} />
+											)}
+											<GoToButton onClick={() => redirectTo(like.id)} />
+										</ButtonGroup>
+									</Item>
+								</Row>
+							);
+						})}
 				</ListBox>
-				</ListContainer>
-			)}
+			</ListContainer>
 		</>
 	);
 }
-
-
 
 const ListContainer = styled.div`
 	width: 75%;
 	margin: auto;
 `;
-
-
 
 export default Likes;

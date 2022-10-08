@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import axios from "../../apis/greenServer";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 function Database() {
 	const [file, setFile] = useState(null);
+	const axiosPrivate = useAxiosPrivate();
 
 	// On file upload (click the upload button)
 	const onFileUpload = () => {
@@ -59,6 +61,11 @@ function Database() {
 		});
 		console.log(res);
 	};
+
+	const fakeData = async () => {
+		const res = await axiosPrivate.post("admin/fakedata");
+		console.log(res);
+	};
 	return (
 		<>
 			<h1>Database</h1>
@@ -67,6 +74,7 @@ function Database() {
 			<button onClick={() => loadTurin()}>Load Turin</button>
 			<button onClick={() => loadLondon()}>Load London</button>
 			<button onClick={() => loadSanremo()}>Load Sanremo</button>
+			<button onClick={() => fakeData()}>Fake Data</button>
 			<br />
 			<input type="file" onChange={(event) => setFile(event.target.files[0])} />
 			<button onClick={() => onFileUpload()}>Upload!</button>

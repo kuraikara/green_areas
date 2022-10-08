@@ -1,10 +1,10 @@
 import { axiosPrivate } from "../apis/greenServer";
 import { useEffect, useRef } from "react";
-import useRefleshToken from "./useRefleshToken";
+import useRefreshToken from "./useRefreshToken";
 import useAuth from "./useAuth";
 
 export default function useAxiosPrivate() {
-	const reflesh = useRefleshToken();
+	const refresh = useRefreshToken();
 	const { auth } = useAuth();
 	const should = useRef(true);
 
@@ -29,7 +29,7 @@ export default function useAxiosPrivate() {
 				const prevRequest = error?.config;
 				if (error?.response?.status === 401 && !prevRequest.sent) {
 					prevRequest.sent = true;
-					const newAccessToken = await reflesh();
+					const newAccessToken = await refresh();
 					prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 					return axiosPrivate(prevRequest);
 				}
@@ -41,7 +41,7 @@ export default function useAxiosPrivate() {
 			axiosPrivate.interceptors.request.eject(requestIntercept);
 			axiosPrivate.interceptors.response.eject(responseIntercept);
 		};
-	}, [auth, reflesh]);
+	}, [auth, refresh]);
 
 	return axiosPrivate;
 }

@@ -10,6 +10,7 @@ from shapely.geometry import shape, polygon, Point
 import os
 from werkzeug.security import generate_password_hash
 from flask_jwt_extended import get_jwt_identity
+from datetime import datetime
 
 #RESOLUTION = os.environ.get('RESOLUTION')
 RESOLUTION = [6, 7 , 8]
@@ -65,7 +66,7 @@ class User(Base):
     username = Column(String(255), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
-    role = Column(String(10), nullable=False)
+    role = Column(String(10), nullable=False, default='user')
     img = Column(String(255), nullable=False, default='https://via.placeholder.com/150')
 
 class Like(Base):
@@ -73,8 +74,10 @@ class Like(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     polygon_id = Column(Integer, ForeignKey('polygon.id'), nullable=False)
+    when = Column(String(255), nullable=False, default=datetime.now().timestamp())
     polygon = relationship('Polygon')
     user = relationship('User')
+  
 
     def __repr__(self):
         return f"Like('{self.id}', '{self.user_id}', '{self.polygon_id}')"
@@ -84,6 +87,7 @@ class Follow(Base):
     id = Column(Integer, primary_key=True)
     followed_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    when = Column(String(255), nullable=False, default=datetime.now().timestamp())
     user = relationship("User", foreign_keys=[user_id])
     followed = relationship("User", foreign_keys=[followed_id])
 
@@ -106,9 +110,7 @@ def create_tables():
     session = Session()
     if session.query(User).filter_by(username="admin").first() is None:
           admin = User(username="admin", email="admin@localhost", password=generate_password_hash("admin"), role="admin")
-          user = User(username="user1", email="user1@localhost", password=generate_password_hash("user1"), role="user")
           session.add(admin)
-          session.add(user)
           session.commit()
     if Like.__table__.exists(engine) is False:
           Like.__table__.create(engine)

@@ -89,7 +89,23 @@ export const Bar = styled.div`
 	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 `;
 
-export const List = styled.div``;
+export const List = styled.div`
+	max-height: 25vh;
+	overflow-y: scroll;
+
+	::-webkit-scrollbar {
+		width: 0.5rem;
+	}
+
+	::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: var(--hover-green);
+		border-radius: 0.5rem;
+	}
+`;
 
 export const Separator = styled.div`
 	height: 0.1rem;
@@ -101,16 +117,26 @@ export const ListItem = styled.div`
 	padding: 0.5rem 1rem 0.5rem 1.5rem;
 	font-size: 1rem;
 	cursor: pointer;
-	display:flex;
+	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-	align-items:center;
+	align-items: center;
 
 	&:hover {
 		background: var(--hover-green);
 		border-radius: 1rem;
 		color: #fff;
 	}
+`;
+
+export const ListItemNoHover = styled.div`
+	padding: 0.5rem 1rem 0.5rem 1.5rem;
+	font-size: 1rem;
+	cursor: pointer;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
 `;
 
 export const Field = styled.div`

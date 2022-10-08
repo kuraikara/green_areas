@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Button, Loader } from "../Miscellaneus";
 import useMap from "../../hooks/useMap";
 import { useNavigate } from "react-router-dom";
-import { ListBox, Row, Item } from "../miscellaneous/List";
+import { ListBox, Row, Item, Placeholder } from "../miscellaneous/List";
 import { BiMap } from "react-icons/bi";
 import { IoHeartDislikeSharp } from "react-icons/io5";
 import useAuth from "../../hooks/useAuth";
@@ -14,10 +14,16 @@ import {
 	Input,
 	Icon,
 	List,
-	ListItem,
+	ListItemNoHover,
 	Separator,
 } from "../SearchField";
-import { AlreadyFollowedButton, ButtonGroup, FollowButton, UnfollowButton, ViewProfileButton } from "../miscellaneous/Buttons";
+import {
+	AlreadyFollowedButton,
+	ButtonGroup,
+	FollowButton,
+	UnfollowButton,
+	ViewProfileButton,
+} from "../miscellaneous/Buttons";
 
 function Follows({ username }) {
 	const [follows, setFollows] = useState([]);
@@ -77,55 +83,62 @@ function Follows({ username }) {
 	}; */
 	const unfollow = async (username) => {
 		try {
-			console.log("unfollow")
-			setLoading(true)
+			console.log("unfollow");
+			setLoading(true);
 			const res = await axiosPrivate.post("/social/unfollow", null, {
-				params:{
-					username : username
-				}
+				params: {
+					username: username,
+				},
 			});
 			console.log(res);
-			setFollows(follows.filter(item => item.username != username))
-			setLoading(false)
+			setFollows(follows.filter((item) => item.username != username));
+			setLoading(false);
 		} catch (error) {
-			console.error(error)
+			console.error(error);
 		}
-	}
+	};
 
-	const addFollow = (new_follow)=>{
-		setFollows(prev => [...prev,new_follow])
-	}
+	const addFollow = (new_follow) => {
+		setFollows((prev) => [...prev, new_follow]);
+	};
 
 	return (
 		<>
 			{!loading && (
 				<SearchContainer>
-					<UserSearch followed={follows} addFollow={addFollow}/>
+					<UserSearch followed={follows} addFollow={addFollow} />
 				</SearchContainer>
 			)}
 			{loading && <Loader />}
-			{!loading && follows.length === 0 && <div>No follow</div>}
-			{!loading && follows.length > 0 && (
-				<ListContainer>
-					<ListBox>
-						{follows.map((follow, index) => {
+
+			<ListContainer>
+				<ListBox>
+					{!loading && follows.length === 0 && (
+						<Placeholder>No follow</Placeholder>
+					)}
+					{!loading &&
+						follows.length > 0 &&
+						follows.map((follow, index) => {
 							return (
 								<Row key={index}>
 									<Item>
 										<div>{follow.username}</div>
 										<ButtonGroup>
-											<ViewProfileButton onClick={()=> nav('/user/'+ follow.username)}>view profile</ViewProfileButton>
-											<UnfollowButton onClick={()=> unfollow(follow.username)}>unfollow</UnfollowButton>
+											<ViewProfileButton
+												onClick={() => nav("/user/" + follow.username)}
+											>
+												view profile
+											</ViewProfileButton>
+											<UnfollowButton onClick={() => unfollow(follow.username)}>
+												unfollow
+											</UnfollowButton>
 										</ButtonGroup>
-										
-
 									</Item>
 								</Row>
 							);
 						})}
-					</ListBox>
-				</ListContainer>
-			)}
+				</ListBox>
+			</ListContainer>
 		</>
 	);
 }
@@ -137,7 +150,7 @@ const SearchContainer = styled.div`
 	justify-content: center;
 `;
 
-const UserSearch = ({ followed, addFollow }) => {
+const UserSearch = ({ addFollow }) => {
 	const [search, setSearch] = useState("");
 	const [users, setUsers] = useState([]);
 	const [loading, setLoading] = useState(false);
@@ -146,6 +159,7 @@ const UserSearch = ({ followed, addFollow }) => {
 	const searchRef = useRef(null);
 	const [isOpen, setIsOpen] = useState(false);
 	const should = useRef(true);
+	const nav = useNavigate();
 
 	useEffect(() => {
 		if (should.current) {
@@ -166,6 +180,7 @@ const UserSearch = ({ followed, addFollow }) => {
 	}, []);
 
 	const searchUser = async (value) => {
+		if (value == "") return;
 		try {
 			setLoading(true);
 			const response = await axiosPrivate.get("/social/searchuser/" + value);
@@ -180,20 +195,20 @@ const UserSearch = ({ followed, addFollow }) => {
 
 	const follow = async (user) => {
 		try {
+			setLoading(true);
 			const res = await axiosPrivate.post("/social/follow", null, {
-				params:{
-					username : user.username
-				}
+				params: {
+					username: user.username,
+				},
 			});
 			console.log(res);
-			setIsOpen(false)
-			addFollow(user)
+			setIsOpen(false);
+			addFollow(user);
+			setLoading(false);
 		} catch (error) {
-			console.error(error)
+			console.error(error);
 		}
-	}
-
-	const followed_usernames = followed.map(user => user.username)
+	};
 
 	return (
 		<Bar ref={searchRef} open={isOpen ? 1 : 0}>
@@ -202,44 +217,44 @@ const UserSearch = ({ followed, addFollow }) => {
 					type="text"
 					placeholder="Search an user..."
 					onChange={(e) => {
-						e.target.value != "" &&
-							searchUser(e.target.value) &&
-							setSearch(e.target.value);
+						searchUser(e.target.value) && setSearch(e.target.value);
 					}}
-					value = {search}
+					value={search}
 				/>
 				<Icon />
 			</Field>
 			{isOpen && (
-					<List>
-						{loading && <Loader />}
-						{!loading && search != "" && users.length === 0 && (
-							<ListItem key={0}>No user found</ListItem>
-						)}
-						{!loading && users.length > 0 && (
-							<>
-								{users.map((user, index) => {
-									if(user.username == auth.username) return;
-									return (
-										<>
-											<Separator />
-											<ListItem key={index}>
-												<div>{user.username}</div>
-												{followed_usernames.includes(user.username) ? (<AlreadyFollowedButton />) : (
-													<FollowButton
-														onClick={() => follow(user)}
-													>
-														Follow
-													</FollowButton>
-												)}
-											</ListItem>
-										</>
-									);
-								})}
-							</>
-						)}
-					</List>
-				
+				<List>
+					{loading && <Loader />}
+					{!loading && search != "" && users.length === 0 && (
+						<ListItemNoHover key={0}>No user found</ListItemNoHover>
+					)}
+					{!loading && users.length > 0 && (
+						<>
+							{users.map((user, index) => {
+								if (user.username == auth.username) return;
+								return (
+									<>
+										<Separator />
+										<ListItemNoHover
+											onClick={() => nav("/user/" + user.username)}
+											key={index}
+										>
+											<div>{user.username}</div>
+											{user.is_followed ? (
+												<AlreadyFollowedButton />
+											) : (
+												<FollowButton onClick={() => follow(user)}>
+													Follow
+												</FollowButton>
+											)}
+										</ListItemNoHover>
+									</>
+								);
+							})}
+						</>
+					)}
+				</List>
 			)}
 		</Bar>
 	);

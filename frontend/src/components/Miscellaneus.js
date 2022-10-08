@@ -2,16 +2,92 @@ import styled from "styled-components";
 import useAuth from "../hooks/useAuth";
 import React, { useState } from "react";
 import { ColorRing } from "react-loader-spinner";
+import { UnfollowButton, FollowButton } from "./miscellaneous/Buttons";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { FaShareAlt } from "react-icons/fa";
 
 export const ProfileHeader = ({ user }) => {
 	console.log(user);
+	const [profileUser, setProfileUser] = useState(user);
+	const axiosPrivate = useAxiosPrivate();
+	const { auth } = useAuth();
+
+	const unfollow = async (username) => {
+		try {
+			console.log("unfollow");
+			const res = await axiosPrivate.post("/social/unfollow", null, {
+				params: {
+					username: username,
+				},
+			});
+
+			console.log(res);
+			setProfileUser(res.data);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	const follow = async (username) => {
+		try {
+			console.log("unfollow");
+			const res = await axiosPrivate.post("/social/follow", null, {
+				params: {
+					username: username,
+				},
+			});
+			console.log(res);
+			setProfileUser(res.data);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	return (
 		<ProfileBox>
-			<ProfileImage img={user?.img} width={"150px"} height={"150px"} />
-			<ProfileName>{user?.username}</ProfileName>
+			<ProfileImage img={profileUser.img} width={"150px"} height={"150px"} />
+			<ProfileName>{profileUser.username}</ProfileName>
+			<ProfileNumbers>
+				Followed {profileUser.followed} - Followers {profileUser.followers}
+			</ProfileNumbers>
+			{auth.username != profileUser.username && (
+				<ProfileFollow>
+					{profileUser.is_followed ? (
+						<UnfollowButton onClick={() => unfollow(user.username)} />
+					) : (
+						<FollowButton onClick={() => follow(user.username)} />
+					)}
+				</ProfileFollow>
+			)}
+			<ProfileShare>
+				<FaShareAlt />
+			</ProfileShare>
 		</ProfileBox>
 	);
 };
+
+const ProfileShare = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	top: 2rem;
+	right: 2rem;
+	font-size: 2rem;
+	cursor: pointer;
+	padding: 0.5rem;
+	border-radius: 50%;
+	transition: all 0.5s ease-in-out;
+
+	&:hover {
+		background: #000;
+		color: #fff;
+	}
+`;
+
+const ProfileFollow = styled.div`
+	margin-top: 1rem;
+`;
 
 const ProfileBox = styled.div`
 	width: 100%;
@@ -21,6 +97,13 @@ const ProfileBox = styled.div`
 	flex-direction: column;
 	padding: 1rem;
 	margin-bottom: 2rem;
+	position: relative;
+`;
+
+const ProfileNumbers = styled.div`
+	font-size: 1rem;
+	color: #999;
+	margin-top: 1rem;
 `;
 
 export const ProfileImage = ({ img, width, height }) => {
