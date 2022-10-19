@@ -1,19 +1,37 @@
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@200&display=swap");
 
 :root {
-  --primary-green: rgb(49, 94, 38);
-  --hover-green: rgb(131, 158, 124);
-  --text-primary: #000;
-  --primary-background: #f2f5f1;
+	--primary-green: #22411a;
+	--hover-green: rgb(131, 158, 124);
+	--home-primary-green: #326e63;
+	--home-hover-green: #428980;
+
+	--green3: #66a58b;
+	--green4: #cce6c3;
+	--green5: #dfedd4;
+	--text-primary: #000;
+	--primary-white: #eff7ea;
 }
 
 * {
-  font-family: "Sora", sans-serif;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+	font-family: "Sora", sans-serif;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
 }
 
 body {
-  background-color: var(--primary-background);
+	background-color: var(--primary-white);
+}
+
+::-webkit-scrollbar {
+	width: 0.6rem;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: var(--primary-green);
+}
+
+::-webkit-scrollbar-track {
+	background-color: #fff;
 }

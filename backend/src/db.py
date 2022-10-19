@@ -92,7 +92,7 @@ class Follow(Base):
     followed = relationship("User", foreign_keys=[followed_id])
 
     def __repr__(self):
-        return f"Follow('{self.id}', '{self.user_id}', '{self.city_id}')"
+        return f"Follow('{self.id}', '{self.user_id}', '{self.followed_id}')"
 
 
 

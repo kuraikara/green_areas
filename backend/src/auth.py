@@ -41,7 +41,7 @@ def refresh_user_token():
     user = session.query(User).filter_by(id=user_id).first()
     session.close()
     access_token = create_access_token(identity=user_id)
-    response = make_response(jsonify({'access_token': access_token, 'username': user.username, 'role':user.role }), 200)
+    response = make_response(jsonify({'access_token': access_token, 'username': user.username, 'role':user.role, 'img': user.img}), 200)
     response.status_code = 200
     
     return response

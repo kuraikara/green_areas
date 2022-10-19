@@ -5,6 +5,7 @@ import { FaBars } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import { MdAccountBox, MdPerson } from "react-icons/md";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import GlobalSearch from "./GlobalSearch";
 
 export default function Navbar({ back }) {
 	const { auth } = useAuth();
@@ -41,27 +42,30 @@ export default function Navbar({ back }) {
 	return (
 		<Nav back={back ? 1 : 0}>
 			<NavLink back={back ? 1 : 0} to="/">
-				<h1>Logo</h1>
+				<h1>Green Areas</h1>
 			</NavLink>
 			<Bars />
 			<NavMenu>
 				<NavLink back={back ? 1 : 0} to="/">
-					Mappa
+					Home
 				</NavLink>
-				<NavLink back={back ? 1 : 0} to="/about">
-					ABOUT
-				</NavLink>
+				{/* <NavLink back={back ? 1 : 0} to="/about">
+					About
+				</NavLink> */}
 				<NavLink back={back ? 1 : 0} to="/tops">
-					TOPS
+					Tops
 				</NavLink>
-				<NavLink back={back ? 1 : 0} to="/feeds">
-					Feeds
-				</NavLink>
+				{auth && (
+					<NavLink back={back ? 1 : 0} to="/feeds">
+						Feeds
+					</NavLink>
+				)}
 			</NavMenu>
+			<GlobalSearch />
 			<div style={{ display: "flex", flexDirection: "row" }}>
 				<NavBtn>
 					<NavBtnLink back={back ? 1 : 0} to="/map">
-						Mappa
+						Map
 					</NavBtnLink>
 				</NavBtn>
 				{!auth ? (
@@ -78,7 +82,7 @@ export default function Navbar({ back }) {
 								onClick={() => setOpenAccount(true)}
 							>
 								{auth?.img ? (
-									<img />
+									<AccountImg src={auth?.img} />
 								) : (
 									<AccountIcon openaccount={openAccount ? 1 : 0} />
 								)}
@@ -112,11 +116,13 @@ export default function Navbar({ back }) {
 }
 
 const Nav = styled.nav`
-	background: ${({ back }) => (back ? "#000" : "transparent")};
+	background: rgba(0, 0, 0, 0.2);
+	background: ${({ back }) => (back ? "#000" : "rgba(0, 0, 0, 0.2)")};
+	border-radius: 0px 0px 10px 10px;
 	height: 80px;
 	display: flex;
 	justify-content: space-between;
-	padding: 0.5rem calc((100vw - 1000px) / 2);
+	padding: 0.5rem calc((100vw - 1500px) / 2);
 	z-index: 10;
 	position: sticky;
 	top: 0;
@@ -124,23 +130,25 @@ const Nav = styled.nav`
 
 const NavLink = styled(Link)`
 	font-size: 1.2em;
-	font-weight: bold;
+	font-weight: 700;
 	color: ${({ back }) =>
-		back == true ? "var(--hover-green);" : "var(--primary-green);"};
+		back == true ? "var(--hover-green);" : "var(--home-primary-green);"};
 	height: 100%;
 	display: flex;
 	align-items: center;
 	padding: 0 1rem;
 	cursor: pointer;
 	text-decoration: none;
+	transition: all 0.5s ease-in-out;
 
 	&.active {
-		color: #fff;
+		color: var(--primary-white);
 	}
 
 	&:hover {
-		transition: all 0.5s ease-in-out;
-		color: #fff;
+		color: var(--primary-white);
+		transform: scale(1.1);
+		font-weight: 900;
 	}
 `;
 
@@ -181,19 +189,23 @@ const NavBtn = styled.nav`
 const NavBtnLink = styled(Link)`
 	padding: 15px 22px;
 	color: #fff;
-	background: var(--primary-green);
-	border: none;
+	background: ${({ back }) =>
+		back == true ? "var(--primary-green);" : "var(--home-primary-green);"};
+
 	outline: none;
 	border-radius: 1rem;
 	margin-right: 1rem;
 	cursor: pointer;
 	transition: all 0.5s ease-in-out;
 	text-decoration: none;
+	box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
+	font-weight: 700;
+	border: ${({ back }) => (!back ? "1px solid var(--primary-white);" : "none")};
 
 	&:hover {
-		transition: all 0.2s ease-in-out;
-		background: #fff;
-		color: var(--primary-green);
+		background: var(--primary-white);
+		color: ${({ back }) =>
+			back == true ? "var(--primary-green);" : "var(--home-primary-green);"};
 	}
 
 	&:active {
@@ -219,6 +231,12 @@ const AccountBtn = styled.div`
 	&:hover {
 		background: #fff;
 	}
+`;
+
+const AccountImg = styled.img`
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
 `;
 
 const AccountIcon = styled(MdPerson)`
@@ -249,6 +267,7 @@ const AccountOptions = styled.div`
 
 const AccountBox = styled.div`
 	position: relative;
+	margin-right: 1rem;
 `;
 
 const AccountOption = styled.div`

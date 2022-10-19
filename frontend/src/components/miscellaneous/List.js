@@ -5,29 +5,45 @@ import { Loader } from "../Miscellaneus";
 import useMap from "../../hooks/useMap";
 import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { GoToButton } from "./Buttons";
+import { AiFillHeart } from "react-icons/ai";
 
 export const RankList = (state) => {
 	console.log(state);
 
-	const children = state.children;
+	const items = state.items;
+
+	for (let i = 0; i < items.length; i++) {
+		const element = items[i];
+		if (i === 0) {
+			element.position = 1;
+		} else if (element.score === items[i - 1].score) {
+			element.position = items[i - 1].position;
+		} else {
+			element.position = items[i - 1].position + 1;
+		}
+	}
 
 	if (state.rank) {
 		return (
 			<>
 				<ListBox>
-					{state.items.map((item, index) => {
+					{items.map((item, index) => {
 						return (
 							<Row key={index}>
-								<Item first={index == 0 ? 1 : 0}>
+								<Item first={item.position == 1 ? 1 : 0}>
 									<Rank
-										first={index == 0 ? 1 : 0}
-										second={index == 1 ? 1 : 0}
-										third={index == 2 ? 1 : 0}
+										first={item.position == 1 ? 1 : 0}
+										second={item.position == 2 ? 1 : 0}
+										third={item.position == 3 ? 1 : 0}
 									>
-										{index + 1}
+										{item.position}
 									</Rank>
 									<Name>{item.name}</Name>
-									<Score>{item.score}</Score>
+									<Score>
+										{item.score} <Heart />
+									</Score>
+									<GoToButton></GoToButton>
 								</Item>
 							</Row>
 						);
@@ -37,6 +53,11 @@ export const RankList = (state) => {
 		);
 	}
 };
+
+const Heart = styled(AiFillHeart)`
+	color: #ff0000;
+	padding-top: 0.3rem;
+`;
 
 const Rank = styled.div`
 	font-size: 3rem;
@@ -63,15 +84,18 @@ export const ListBox = styled.div`
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	margin: 0 auto;
+	margin: 0 auto 2rem auto;
 `;
+
+//TODO: Add a prop to change the color of the row
 
 export const Row = styled.div`
 	padding: 1rem;
 	background: #fff;
 	border-radius: 1rem;
-	margin-top: 1rem;
+	margin-top: 2rem;
 	width: 100%;
+	box-shadow: 0 0 0.5rem 0.1rem rgba(0, 0, 0, 0.1);
 `;
 
 export const Item = styled.div`
@@ -79,6 +103,17 @@ export const Item = styled.div`
 	justify-content: space-between;
 	align-items: center;
 	padding: ${({ first }) => (first ? " 1rem 3rem;" : "0 3rem")};
+	gap: 1rem;
+
+	@media screen and (max-width: 500px) {
+		flex-direction: column;
+		padding: ${({ first }) => (first ? " 1rem 3rem;" : "0 3rem")};
+
+		& > p {
+			margin: 0;
+			padding: 0;
+		}
+	}
 `;
 
 export const Placeholder = (state) => {

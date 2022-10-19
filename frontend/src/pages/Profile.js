@@ -7,12 +7,14 @@ import Navbar from "../components/Navbar";
 import useAuth from "../hooks/useAuth";
 import Tabs from "../components/miscellaneous/Tabs";
 import Follows from "../components/user/Follows";
+import { useNavigate } from "react-router-dom";
 
 function Profile() {
 	const { username } = useParams();
 	const [user, setUser] = useState(null);
 	const axiosPrivate = useAxiosPrivate();
 	const { auth } = useAuth();
+	const nav = useNavigate();
 
 	const fetchUser = async () => {
 		try {
@@ -25,8 +27,11 @@ function Profile() {
 	};
 
 	useEffect(() => {
+		if (username == auth.username) {
+			nav("/user", { replace: true });
+		}
 		fetchUser();
-	}, []);
+	}, [username]);
 
 	return (
 		<>
@@ -34,8 +39,10 @@ function Profile() {
 			{user && (
 				<>
 					<ProfileHeader user={user}></ProfileHeader>
-
-					<Likes username={username} />
+					<Tabs>
+						<Likes tabname={"Likes"} username={username} />
+						<Follows tabname={"Follow"} username={username} />
+					</Tabs>
 				</>
 			)}
 		</>

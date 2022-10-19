@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import useRefreshToken from "../hooks/useRefreshToken";
 import useAuth from "../hooks/useAuth";
+import { Loader } from "./Miscellaneus";
 
 export default function PersistentLogin() {
 	const { auth } = useAuth();
@@ -30,5 +31,5 @@ export default function PersistentLogin() {
 		console.log(`aT: ${JSON.stringify(auth?.accessToken)}`);
 	}, [loading]);
 
-	return <>{loading ? <p>Loading...</p> : <Outlet />}</>;
+	return <>{loading ? <Loader /> : <Outlet />}</>;
 }

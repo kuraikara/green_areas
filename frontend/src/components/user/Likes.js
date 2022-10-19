@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import styled from "styled-components";
 import { Button, Loader } from "../../components/Miscellaneus";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ListBox, Row, Item, Placeholder } from "../miscellaneous/List";
 
 import useAuth from "../../hooks/useAuth";
+import useLazyLoader from "../../hooks/useLazyLoader";
 
 import {
 	ButtonGroup,
@@ -15,15 +16,43 @@ import {
 } from "../miscellaneous/Buttons";
 
 function Likes({ username }) {
-	const [likes, setLikes] = useState([]);
-	const [loading, setLoading] = useState(true);
 	const axiosPrivate = useAxiosPrivate();
 	const should = useRef(true);
 	const { redirectTo } = useMap();
 	const nav = useNavigate();
 	const { auth } = useAuth();
 
-	useEffect(() => {
+	const [page, setPage] = useState(0);
+
+	const {
+		loading,
+		setLoading,
+		items: likes,
+		setItems: setLikes,
+		error,
+		hasMore,
+		reload,
+	} = useLazyLoader({
+		query: `/social/likes/${username}`,
+		page: page,
+	});
+
+	const observer = useRef();
+	const lastItem = useCallback(
+		(node) => {
+			if (loading) return;
+			if (observer.current) observer.current.disconnect();
+			observer.current = new IntersectionObserver((entries) => {
+				if (entries[0].isIntersecting && hasMore) {
+					setPage((prev) => prev + 1);
+				}
+			});
+			if (node) observer.current.observe(node);
+		},
+		[loading, hasMore]
+	);
+
+	/* useEffect(() => {
 		const controller = new AbortController();
 		if (should.current) {
 			should.current = false;
@@ -48,7 +77,7 @@ function Likes({ username }) {
 				controller.abort();
 			};
 		}
-	}, []);
+	}, []); */
 
 	const unLike = async (id) => {
 		setLoading(true);
@@ -68,16 +97,28 @@ function Likes({ username }) {
 
 	return (
 		<>
-			{loading && <Loader />}
-
 			<ListContainer>
 				<ListBox>
 					{!loading && likes.length === 0 && (
 						<Placeholder>No likes</Placeholder>
 					)}
-					{!loading &&
-						likes.length > 0 &&
+					{likes.length > 0 &&
 						likes.map((like, index) => {
+							if (likes.length === index + 1) {
+								return (
+									<Row ref={lastItem} key={index}>
+										<Item>
+											<div>{like.name + " " + like.id}</div>
+											<ButtonGroup>
+												{auth.username == username && (
+													<UnlikeButton onClick={() => unLike(like.id)} />
+												)}
+												<GoToButton onClick={() => redirectTo(like.id)} />
+											</ButtonGroup>
+										</Item>
+									</Row>
+								);
+							}
 							return (
 								<Row key={index}>
 									<Item>
@@ -94,6 +135,7 @@ function Likes({ username }) {
 						})}
 				</ListBox>
 			</ListContainer>
+			{loading && <Loader />}
 		</>
 	);
 }

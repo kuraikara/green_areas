@@ -5,7 +5,7 @@ import { H3HexagonLayer } from "@deck.gl/geo-layers";
 import { StaticMap } from "react-map-gl";
 import { kRing, geoToH3, h3ToChildren } from "h3-js";
 import { LinearInterpolator } from "@deck.gl/core";
-import { MapContext } from "../../MapPage";
+import { MapContext } from "../../pages/MapPage";
 import axios from "../../apis/greenServer";
 import useMap from "../../hooks/useMap";
 
@@ -63,8 +63,8 @@ function GreenMap({ indexes }) {
 	const [viewState, setViewState] = useState(
 		selectedPolygon == null
 			? {
-					longitude: 7.6436,
-					latitude: 45.069,
+					longitude: 7.905030400290451,
+					latitude: 43.86137904862206,
 					zoom: 15,
 					pitch: 0,
 					bearing: 0,
@@ -74,7 +74,7 @@ function GreenMap({ indexes }) {
 					selectedPolygon.properties.area
 			  )
 	);
-	const [h3Indexes, setH3Indexes] = useState(indexes);
+	const [h3Indexes, setH3Indexes] = useState(new Map(indexes));
 	const [layer, setLayer] = useState([]);
 	const [addedPolygonsIds, setAddedPolygonsIds] = useState(new Set());
 	const [selectedPolygonLayer, setSelectedPolygonLayer] = useState(null);
@@ -182,12 +182,12 @@ function GreenMap({ indexes }) {
 			pointType: "circle",
 			lineWidthScale: 20,
 			lineWidthMinPixels: 2,
-			getFillColor: [131, 158, 124, 100],
+			getFillColor: [204, 230, 195],
 			getPointRadius: 100,
 			getElevation: 0,
 			getLineWidth: 1,
 			autoHighlight: true,
-			highlightColor: [131, 158, 124],
+			highlightColor: [102, 165, 139],
 			onClick: (info, event) => {
 				setPolygonDetails(info.object);
 				setSelectedPolygonLayer(
@@ -200,7 +200,7 @@ function GreenMap({ indexes }) {
 						pointType: "circle",
 						lineWidthScale: 20,
 						lineWidthMinPixels: 2,
-						getFillColor: [49, 94, 38, 255],
+						getFillColor: [102, 165, 139],
 						getPointRadius: 100,
 						getElevation: 0,
 						getLineWidth: 1,

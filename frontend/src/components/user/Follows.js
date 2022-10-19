@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import styled from "styled-components";
-import { Button, Loader } from "../Miscellaneus";
+import { Button, Loader, ProfileLinkImage } from "../Miscellaneus";
 import useMap from "../../hooks/useMap";
 import { useNavigate } from "react-router-dom";
 import { ListBox, Row, Item, Placeholder } from "../miscellaneous/List";
 import { BiMap } from "react-icons/bi";
 import { IoHeartDislikeSharp } from "react-icons/io5";
 import useAuth from "../../hooks/useAuth";
+import useLazyLoader from "../../hooks/useLazyLoader";
 import {
 	Bar,
 	Field,
@@ -26,15 +27,13 @@ import {
 } from "../miscellaneous/Buttons";
 
 function Follows({ username }) {
-	const [follows, setFollows] = useState([]);
-	const [loading, setLoading] = useState(true);
 	const axiosPrivate = useAxiosPrivate();
 	const should = useRef(true);
 	const { setPolygonDetails } = useMap();
 	const nav = useNavigate();
 	const { auth } = useAuth();
 
-	useEffect(() => {
+	/* useEffect(() => {
 		const controller = new AbortController();
 		if (should.current) {
 			should.current = false;
@@ -62,7 +61,42 @@ function Follows({ username }) {
 				controller.abort();
 			};
 		}
-	}, []);
+	}, []); */
+
+	const [page, setPage] = useState(0);
+	useEffect(() => {
+		setLoading(true);
+		setPage(0);
+		setFollows([]);
+	}, [username]);
+
+	const {
+		loading,
+		setLoading,
+		items: follows,
+		setItems: setFollows,
+		error,
+		hasMore,
+		reload,
+	} = useLazyLoader({
+		query: `/social/follows/${username}`,
+		page: page,
+	});
+
+	const observer = useRef();
+	const lastItem = useCallback(
+		(node) => {
+			if (loading) return;
+			if (observer.current) observer.current.disconnect();
+			observer.current = new IntersectionObserver((entries) => {
+				if (entries[0].isIntersecting && hasMore) {
+					setPage((prev) => prev + 1);
+				}
+			});
+			if (node) observer.current.observe(node);
+		},
+		[loading, hasMore]
+	);
 
 	/* const unLike = async (id) => {
 		try {
@@ -98,40 +132,110 @@ function Follows({ username }) {
 		}
 	};
 
+	const follow = async (user) => {
+		try {
+			setLoading(true);
+			const res = await axiosPrivate.post("/social/follow", null, {
+				params: {
+					username: user.username,
+				},
+			});
+			console.log(res);
+			setFollows((prev) =>
+				prev.map((item) =>
+					item.username == user.username ? (item.followed = true) : item
+				)
+			);
+			setLoading(false);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	const addFollow = (new_follow) => {
 		setFollows((prev) => [...prev, new_follow]);
 	};
 
 	return (
 		<>
-			{!loading && (
+			{/* {auth.username == username && (
 				<SearchContainer>
 					<UserSearch followed={follows} addFollow={addFollow} />
 				</SearchContainer>
-			)}
-			{loading && <Loader />}
+			)} */}
 
 			<ListContainer>
 				<ListBox>
 					{!loading && follows.length === 0 && (
 						<Placeholder>No follow</Placeholder>
 					)}
-					{!loading &&
-						follows.length > 0 &&
+					{follows.length > 0 &&
 						follows.map((follow, index) => {
+							if (follows.length === index + 1) {
+								return (
+									<Row ref={lastItem} key={index}>
+										<Item>
+											<User>
+												<ProfileLinkImage src={follow.img} />
+												<Name>{follow.username}</Name>
+											</User>
+											<ButtonGroup>
+												{auth.username == username ? (
+													<UnfollowButton
+														onClick={() => unfollow(follow.username)}
+													>
+														unfollow
+													</UnfollowButton>
+												) : (
+													<>
+														{follow.is_followed ? (
+															<AlreadyFollowedButton />
+														) : (
+															<FollowButton onClick={() => follow(follow)} />
+														)}
+													</>
+												)}
+												<ViewProfileButton
+													onClick={() => {
+														console.log(follow.username);
+														nav("/user/" + follow.username);
+													}}
+												>
+													view profile
+												</ViewProfileButton>
+											</ButtonGroup>
+										</Item>
+									</Row>
+								);
+							}
 							return (
 								<Row key={index}>
 									<Item>
-										<div>{follow.username}</div>
+										<User>
+											<ProfileLinkImage src={follow.img} />
+											<Name>{follow.username}</Name>
+										</User>
 										<ButtonGroup>
+											{auth.username == username ? (
+												<UnfollowButton
+													onClick={() => unfollow(follow.username)}
+												>
+													unfollow
+												</UnfollowButton>
+											) : (
+												<>
+													{follow.is_followed ? (
+														<AlreadyFollowedButton />
+													) : (
+														<FollowButton onClick={() => follow(follow)} />
+													)}
+												</>
+											)}
 											<ViewProfileButton
 												onClick={() => nav("/user/" + follow.username)}
 											>
 												view profile
 											</ViewProfileButton>
-											<UnfollowButton onClick={() => unfollow(follow.username)}>
-												unfollow
-											</UnfollowButton>
 										</ButtonGroup>
 									</Item>
 								</Row>
@@ -139,12 +243,24 @@ function Follows({ username }) {
 						})}
 				</ListBox>
 			</ListContainer>
+			{loading && <Loader />}
 		</>
 	);
 }
 
+const User = styled.div`
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	gap: 0.5rem;
+`;
+
+const Name = styled.p`
+	padding-right: 1rem;
+`;
+
 const SearchContainer = styled.div`
-	margin: 2rem 0 5rem 0;
+	margin: 5rem 0 1rem 0;
 	width: 100%;
 	display: flex;
 	justify-content: center;
@@ -211,7 +327,7 @@ const UserSearch = ({ addFollow }) => {
 	};
 
 	return (
-		<Bar ref={searchRef} open={isOpen ? 1 : 0}>
+		<UserBar ref={searchRef} open={isOpen && users.length > 0 ? 1 : 0}>
 			<Field onClick={() => setIsOpen(true)}>
 				<Input
 					type="text"
@@ -224,7 +340,7 @@ const UserSearch = ({ addFollow }) => {
 				<Icon />
 			</Field>
 			{isOpen && (
-				<List>
+				<UserList>
 					{loading && <Loader />}
 					{!loading && search != "" && users.length === 0 && (
 						<ListItemNoHover key={0}>No user found</ListItemNoHover>
@@ -232,21 +348,27 @@ const UserSearch = ({ addFollow }) => {
 					{!loading && users.length > 0 && (
 						<>
 							{users.map((user, index) => {
-								if (user.username == auth.username) return;
+								//if (user.username == auth.username) return;
 								return (
 									<>
 										<Separator />
-										<ListItemNoHover
-											onClick={() => nav("/user/" + user.username)}
-											key={index}
-										>
-											<div>{user.username}</div>
-											{user.is_followed ? (
+										<ListItemNoHover key={index}>
+											<Link
+												onClick={() => {
+													setIsOpen(false);
+													nav("/user/" + user.username);
+												}}
+											>
+												{user.username}
+											</Link>
+											{user.username != auth.username && user.is_followed ? (
 												<AlreadyFollowedButton />
 											) : (
-												<FollowButton onClick={() => follow(user)}>
-													Follow
-												</FollowButton>
+												user.username != auth.username && (
+													<FollowButton onClick={() => follow(user)}>
+														Follow
+													</FollowButton>
+												)
 											)}
 										</ListItemNoHover>
 									</>
@@ -254,11 +376,38 @@ const UserSearch = ({ addFollow }) => {
 							})}
 						</>
 					)}
-				</List>
+				</UserList>
 			)}
-		</Bar>
+		</UserBar>
 	);
 };
+
+const Link = styled.a`
+	color: #000;
+	text-decoration: underline;
+	cursor: pointer;
+	font-weight: 700;
+
+	&:hover {
+		color: var(--primary-green);
+	}
+`;
+
+const UserBar = styled(Bar)`
+	position: relative;
+	${({ open }) => open && "border-radius: 1rem 1rem 0 0;"}
+`;
+
+const UserList = styled(List)`
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	z-index: 1;
+	background-color: #fff;
+	border-radius: 0 0 1rem 1rem;
+	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+`;
 
 const ListContainer = styled.div`
 	width: 70%;

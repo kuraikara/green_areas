@@ -6,6 +6,9 @@ import Navbar from "../components/Navbar";
 import useAuth from "../hooks/useAuth";
 import { BiMap } from "react-icons/bi";
 import { AiFillHeart } from "react-icons/ai";
+import useAxios from "../hooks/useAxios";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { Loader } from "../components/Miscellaneus";
 
 function Ranking() {
 	const { auth } = useAuth();
@@ -23,6 +26,12 @@ function Ranking() {
 }
 
 const World50 = () => {
+	const axiosPrivate = useAxiosPrivate();
+	const [ranks, error, loading, refetch] = useAxios({
+		axiosInstance: axiosPrivate,
+		url: "/social/top",
+		method: "get",
+	});
 	return (
 		<>
 			{/* <List>
@@ -51,17 +60,20 @@ const World50 = () => {
 					</Item>
 				</Row>
 			</List> */}
-			<RankList
-				rank
-				items={[
-					{ id: 1, name: "John Doe", score: 100 },
-					{ id: 2, name: "Prova", score: 150 },
-					{ id: 3, name: "Prova", score: 150 },
-				]}
-			></RankList>
+			{loading && <Loader />}
+			{!loading && (
+				<ListContainer>
+					<RankList rank items={ranks}></RankList>
+				</ListContainer>
+			)}
 		</>
 	);
 };
+
+const ListContainer = styled.div`
+	width: 75%;
+	margin: 0 auto;
+`;
 
 const Heart = styled(AiFillHeart)`
 	color: red;

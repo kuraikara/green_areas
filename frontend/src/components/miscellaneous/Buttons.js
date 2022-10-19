@@ -16,7 +16,7 @@ export const ButtonGroup = styled.div`
 
 export const UnlikeButton = ({ onClick }) => {
 	return (
-		<Container onClick={() => onClick()} color={"red"}>
+		<Container onClick={() => onClick()} color={"#ff5147"}>
 			<UnlikeIcon />
 			<Text>unlike</Text>
 		</Container>
@@ -25,7 +25,7 @@ export const UnlikeButton = ({ onClick }) => {
 
 export const UnfollowButton = ({ onClick }) => {
 	return (
-		<Container onClick={() => onClick()} color={"red"}>
+		<Container onClick={() => onClick()} color={"#ff5147"}>
 			<UnfollowIcon />
 			<Text>unfollow</Text>
 		</Container>
@@ -34,7 +34,7 @@ export const UnfollowButton = ({ onClick }) => {
 
 export const FollowButton = ({ onClick }) => {
 	return (
-		<Container onClick={() => onClick()} color={"green"}>
+		<Container onClick={() => onClick()} color={"#4CAF50"}>
 			<FollowIcon />
 			<Text>follow</Text>
 		</Container>
@@ -45,23 +45,23 @@ export const AlreadyFollowedButton = () => {
 	return (
 		<AlreadyContainer>
 			<AlreadyFollowedIcon />
-			<Text>followed</Text>
+			<Text>following</Text>
 		</AlreadyContainer>
 	);
 };
 
 export const GoToButton = ({ onClick }) => {
 	return (
-		<Container onClick={() => onClick()} color={"black"}>
+		<Container onClick={() => onClick()} color={"#424242"}>
 			<GoToIcon />
 			<Text>view on map</Text>
 		</Container>
 	);
 };
 
-export const ViewProfileButton = () => {
+export const ViewProfileButton = ({ onClick }) => {
 	return (
-		<Container color={"black"}>
+		<Container onClick={() => onClick()} color={"#424242"}>
 			<ViewProfileIcon />
 			<Text>view profile</Text>
 		</Container>
@@ -100,9 +100,8 @@ const AlreadyContainer = styled.div`
 	padding: 0.5rem;
 	border-radius: 0.5rem;
 	gap: 0.1rem;
-	cursor: pointer;
 	transition: all 0.5s ease-in-out;
-
+	user-select: none;
 	& > * {
 		color: blue;
 	}
@@ -129,6 +128,15 @@ const AlreadyFollowedIcon = styled(RiUserFollowFill)`
 
 const Text = styled.p`
 	font-size: 1rem;
+	font-weight: 700;
+
+	@media (max-width: 768px) {
+		display: none;
+	}
+
+	@media (max-width: 500px) {
+		display: inline;
+	}
 `;
 
 const GoToIcon = styled(BiMap)`

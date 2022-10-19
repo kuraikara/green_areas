@@ -16,6 +16,7 @@ export default function useRefreshToken() {
 				accessToken: response.data.access_token,
 				role: response.data.role,
 				username: response.data.username,
+				img: response.data.img,
 			};
 		});
 		return response.data.access_token;

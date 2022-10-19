@@ -5,6 +5,8 @@ from src.db import User, Session, Polygon, Follow, Like
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
 import random
+import requests
+import json 
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -42,11 +44,14 @@ def user():
 @jwt_required()
 def fakedata():
     session = Session()
-    users =[]
     polygons = session.query(Polygon).all()
-    print(polygons)
-    for n in range(20):
-        user = User(username=f'User{n}', email=f'User{n}@email.com', password=generate_password_hash('password'))
+    
+    res = requests.get('https://dummyjson.com/users')
+    response = json.loads(res.text)
+    userdata = response['users']
+    users= []
+    for item in userdata:
+        user = User(username=item.get('username'), email=item.get('email'),img=item.get('image'), password=generate_password_hash('password'))
         users.append(user)
         session.add(user)
     session.commit()

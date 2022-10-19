@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { IoMdClose, IoMdExpand } from "react-icons/io";
 import { AiFillLike, AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { FaShareAlt } from "react-icons/fa";
-import useMap from "../hooks/useMap";
-import { Loader } from "./Miscellaneus";
-
-import { BASE_URL } from "../apis/greenServer";
+import useMap from "../../hooks/useMap";
+import { Loader } from "../Miscellaneus";
+import useAuth from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import axios from "../../apis/greenServer";
+import { SharedAlert } from "../Miscellaneus";
 
 import {
 	MdOutlineExpandLess,
@@ -23,17 +25,23 @@ export default function DetailsPanel() {
 	const { polygonDetails, setPolygonDetails } = useMap();
 	const [likes, setLikes] = useState(0);
 	const [liked, setLiked] = useState(false);
+	const [followedLiking, setFollowedLiking] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [copied, setCopied] = useState(false);
+	const { auth } = useAuth();
+	const nav = useNavigate();
 
 	const fetchLikes = async () => {
 		try {
-			const response = await axiosPrivate.get("/social/polylikes", {
+			setLoading(true);
+			const axiosInstance = auth ? axiosPrivate : axios;
+			const response = await axiosInstance.get("/social/polylikes", {
 				params: { polygon_id: polygonDetails.properties.id },
 			});
 
 			setLikes(response.data.likes);
 			setLiked(response.data.liked);
+			setFollowedLiking(response.data.followed_liking);
 			console.log(response.data);
 			setLoading(false);
 		} catch (error) {
@@ -71,17 +79,20 @@ export default function DetailsPanel() {
 	}, []);
 
 	const like = async (id) => {
-		try {
-			const response = await axiosPrivate.post("/social/like", null, {
-				params: { polygon_id: id },
-			});
-			console.log(response.data);
-			response.data.success &&
-				console.log("liked") &&
+		if (auth) {
+			try {
+				const response = await axiosPrivate.post("/social/like", null, {
+					params: { polygon_id: id },
+				});
+				console.log(response);
+				response.status == 200 && console.log("liked");
 				setLikes(response.data.likes);
-			setLiked(true);
-		} catch (error) {
-			console.error(error);
+				setLiked(true);
+			} catch (error) {
+				console.error(error);
+			}
+		} else {
+			nav("/login");
 		}
 	};
 
@@ -90,10 +101,9 @@ export default function DetailsPanel() {
 			const response = await axiosPrivate.post("/social/unlike", null, {
 				params: { polygon_id: id },
 			});
-			console.log(response.data);
-			response.data.success &&
-				console.log("unliked") &&
-				setLikes(response.data.likes);
+			console.log(response);
+			response.status == 200 && console.log("unliked");
+			setLikes(response.data.likes);
 			setLiked(false);
 		} catch (error) {
 			console.error(error);
@@ -134,6 +144,7 @@ export default function DetailsPanel() {
 			) : (
 				<>
 					<div>{polygonDetails.properties.id}</div>
+					<Name>{polygonDetails.properties.name}</Name>
 					<LikeShareButtons>
 						<Button>
 							{liked ? (
@@ -143,17 +154,58 @@ export default function DetailsPanel() {
 							) : (
 								<LikeIcon onClick={() => like(polygonDetails.properties.id)} />
 							)}
+							<p>{likes}</p>
 						</Button>
 						<Button>
 							<ShareIcon onClick={() => share(polygonDetails.properties.id)} />
 							{copied && <SharedAlert>Copied!</SharedAlert>}
 						</Button>
 					</LikeShareButtons>
+					{followedLiking.length > 0 && (
+						<>
+							<FollowedLiking>
+								{followedLiking.map((user, index) => (
+									<>
+										{index != 0 && <>{", "}</>}
+										<FollowedLikingUser
+											key={index}
+											onClick={() => nav("/user/" + user)}
+										>
+											{user}
+										</FollowedLikingUser>
+									</>
+								))}
+								{" like this place"}
+							</FollowedLiking>
+						</>
+					)}
 				</>
 			)}
 		</CollapsiblePanel>
 	);
 }
+
+const FollowedLiking = styled.div`
+	font-size: 1rem;
+	padding: 0.5rem;
+`;
+
+const FollowedLikingUser = styled.a`
+	font-weight: 600;
+	color: #000;
+	text-decoration: underline;
+	cursor: pointer;
+
+	&:hover {
+		color: var(--primary-green);
+	}
+`;
+
+const Name = styled.div`
+	font-size: 1.5rem;
+	font-weight: 600;
+	margin: 1rem 0;
+`;
 
 const CollapsiblePanel = styled.div`
 	z-index: 100;
@@ -250,9 +302,22 @@ const Button = styled.div`
 	cursor: pointer;
 	padding: 1rem 0;
 	font-size: 3rem;
-	transition: all 0.5s ease-in-out;
+
+	position: relative;
+
 	&:hover {
-		transform: scale(1.2);
+		& > svg {
+			transition: all 0.5s ease-in-out;
+			transform: scale(1.2);
+		}
+	}
+
+	& > p {
+		font-size: 1.2rem;
+		position: absolute;
+		top: 80%;
+		width: 100%;
+		text-align: center;
 	}
 `;
 
@@ -268,34 +333,4 @@ const LikedIcon = styled(AiFillHeart)`
 const ShareIcon = styled(FaShareAlt)`
 	font-size: 2.5rem;
 	color: black;
-`;
-
-const SharedAlert = styled.div`
-	position: absolute;
-	width: 50%;
-	top: 100%;
-	left: 25%;
-	font-size: 1rem;
-	font-weight: 900;
-	padding: 0.5rem 0;
-	color: var(--primary-green);
-	background-color: #000;
-	animation-duration: 2s;
-	animation-name: slideinout;
-	animation-direction: horizontal;
-	animation-iteration-count: 1;
-	border-radius: 0.5rem;
-	@keyframes slideinout {
-		from {
-			opacity: 0%;
-		}
-
-		to {
-			opacity: 0%;
-		}
-
-		50% {
-			opacity: 100%;
-		}
-	}
 `;

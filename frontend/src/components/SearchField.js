@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { IoIosSearch } from "react-icons/io";
 import styled from "styled-components";
-import { MapContext } from "../MapPage";
 import useAxios from "../hooks/useAxios";
 import axios from "../apis/greenServer";
 import useMap from "../hooks/useMap";
@@ -47,7 +46,7 @@ export default function SearchField() {
 	};
 
 	return (
-		<Bar ref={searchRef}>
+		<Bar ref={searchRef} isOpen={isOpen ? 1 : 0}>
 			<Field onClick={() => setIsOpen(true)}>
 				<Input type="text" placeholder="Search" />
 				<Icon />
@@ -80,18 +79,22 @@ export const Icon = styled(IoIosSearch)`
 `;
 
 export const Bar = styled.div`
-	position: absolute;
-	/* top: 1rem;
-	left: 8rem; */
 	z-index: 100;
 	background: #fff;
 	border-radius: 1rem;
+	border-radius: ${({ isOpen }) => (isOpen ? "1rem 1rem 0 0" : "1rem")};
 	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+	position: relative;
 `;
 
 export const List = styled.div`
 	max-height: 25vh;
 	overflow-y: scroll;
+	position: absolute;
+	width: 100%;
+	height: max-content;
+	background: #fff;
+	border-radius: 0 0 1rem 1rem;
 
 	::-webkit-scrollbar {
 		width: 0.5rem;
@@ -132,7 +135,6 @@ export const ListItem = styled.div`
 export const ListItemNoHover = styled.div`
 	padding: 0.5rem 1rem 0.5rem 1.5rem;
 	font-size: 1rem;
-	cursor: pointer;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
