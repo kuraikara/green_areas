@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import styled from "styled-components";
 import { Loader } from "../Miscellaneus";
 
@@ -8,60 +8,71 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { GoToButton } from "./Buttons";
 import { AiFillHeart } from "react-icons/ai";
 
-export const RankList = (state) => {
-	console.log(state);
+import useLazyLoader from "../../hooks/useLazyLoader";
 
-	const items = state.items;
+const ListLazy = ({ api, element: Element }) => {
+	const [page, setPage] = useState(0);
 
-	for (let i = 0; i < items.length; i++) {
-		const element = items[i];
-		if (i === 0) {
-			element.position = 1;
-		} else if (element.score === items[i - 1].score) {
-			element.position = items[i - 1].position;
-		} else {
-			element.position = items[i - 1].position + 1;
-		}
-	}
+	const { loading, setLoading, items, setItems, error, hasMore, reload } =
+		useLazyLoader({
+			query: api,
+			page: page,
+		});
 
-	if (state.rank) {
-		return (
-			<>
-				<ListBox>
-					{items.map((item, index) => {
+	const observer = useRef();
+	const lastItem = useCallback(
+		(node) => {
+			if (loading) return;
+			if (observer.current) observer.current.disconnect();
+			observer.current = new IntersectionObserver((entries) => {
+				if (entries[0].isIntersecting && hasMore) {
+					setPage((prev) => prev + 1);
+				}
+			});
+			if (node) observer.current.observe(node);
+		},
+		[loading, hasMore]
+	);
+
+	return (
+		<>
+			<ListBox>
+				{items.map((item, index) => {
+					if (items.length === index + 1) {
 						return (
-							<Row key={index}>
-								<Item first={item.position == 1 ? 1 : 0}>
-									<Rank
-										first={item.position == 1 ? 1 : 0}
-										second={item.position == 2 ? 1 : 0}
-										third={item.position == 3 ? 1 : 0}
-									>
-										{item.position}
-									</Rank>
-									<Name>{item.name}</Name>
-									<ScoreBox>
-										<Score>
-											{item.score} <Heart />
-										</Score>
-										<GoToButton></GoToButton>
-									</ScoreBox>
+							<Row ref={lastItem} key={index}>
+								<Item>
+									<Element
+										item={item}
+										items={items}
+										setItems={setItems}
+										loading={loading}
+										setLoading={setLoading}
+									></Element>
 								</Item>
 							</Row>
 						);
-					})}
-				</ListBox>
-			</>
-		);
-	}
+					}
+					return (
+						<Row key={index}>
+							<Item>
+								<Element
+									item={item}
+									items={items}
+									setItems={setItems}
+									loading={loading}
+									setLoading={setLoading}
+								></Element>
+							</Item>
+						</Row>
+					);
+				})}
+			</ListBox>
+		</>
+	);
 };
 
-const ScoreBox = styled.div`
-	display: flex;
-	flex-direction: row;
-	gap: 6rem;
-	align-items: center;
-`;
+export default ListLazy;
 
 const Heart = styled(AiFillHeart)`
 	color: #ff0000;

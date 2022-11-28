@@ -34,6 +34,111 @@ function Feeds() {
 		page: page,
 	});
 
+	const test = [
+		{
+			followed: "jtreleven5",
+			img: "https://robohash.org/amettemporeea.png",
+			type: "follow",
+			username: "jissetts",
+			when: "1666110566.39868",
+		},
+		{
+			img: "https://robohash.org/aliquamcumqueiure.png",
+			polygon_id: 7,
+			polygon_name: "Parco del Valentino",
+			type: "like",
+			username: "umcgourty9",
+			when: "1666110566.39768",
+		},
+		{
+			followed: "sberminghamh",
+			img: "https://robohash.org/amettemporeea.png",
+			type: "follow",
+			username: "jissetts",
+			when: "1666110566.39868",
+		},
+		{
+			followed: "rhallawellb",
+			img: "https://robohash.org/amettemporeea.png",
+			type: "follow",
+			username: "jissetts",
+			when: "1666110566.39868",
+		},
+		{
+			img: "https://robohash.org/aliquamcumqueiure.png",
+			polygon_id: 34,
+			polygon_name: "Parco Giacomo Leopardi",
+			type: "like",
+			username: "umcgourty9",
+			when: "1666110566.39768",
+		},
+		{
+			followed: "sberminghamh",
+			img: "https://robohash.org/amettemporeea.png",
+			type: "follow",
+			username: "jissetts",
+			when: "1666110566.39868",
+		},
+		{
+			followed: "fokillq",
+			img: "https://robohash.org/amettemporeea.png",
+			type: "follow",
+			username: "jissetts",
+			when: "1666110566.39868",
+		},
+		{
+			followed: "lgribbinc",
+			img: "https://robohash.org/amettemporeea.png",
+			type: "follow",
+			username: "jissetts",
+			when: "1666110566.39868",
+		},
+		{
+			followed: "ggude7",
+			img: "https://robohash.org/amettemporeea.png",
+			type: "follow",
+			username: "jissetts",
+			when: "1666110566.39868",
+		},
+		{
+			followed: "sberminghamh",
+			img: "https://robohash.org/amettemporeea.png",
+			type: "follow",
+			username: "jissetts",
+			when: "1666110566.39868",
+		},
+		{
+			followed: "rshawe2",
+			img: "https://robohash.org/amettemporeea.png",
+			type: "follow",
+			username: "jissetts",
+			when: "1666110566.39868",
+		},
+		{
+			followed: "dfundello",
+			img: "https://robohash.org/amettemporeea.png",
+			type: "follow",
+			username: "jissetts",
+			when: "1666110566.39868",
+		},
+		{
+			img: "https://robohash.org/aliquamcumqueiure.png",
+			polygon_id: 7,
+			polygon_name: "Name poly",
+			type: "like",
+			username: "umcgourty9",
+			when: "1666110566.39768",
+		},
+		{
+			img: "https://robohash.org/aliquamcumqueiure.png",
+			polygon_id: 66,
+			polygon_name: "Name poly",
+			type: "like",
+			username: "umcgourty9",
+			when: "1666110566.39768",
+		},
+	];
+
 	const observer = useRef();
 	const lastItem = useCallback(
 		(node) => {
@@ -58,7 +163,7 @@ function Feeds() {
 		<>
 			<Navbar back={true} />
 			<Title>Feeds</Title>
-			<button onClick={() => reloadItems()}>Reload</button>
+			{/* <button onClick={() => reloadItems()}>Reload</button> */}
 
 			<ListContainer>
 				<ListBox>

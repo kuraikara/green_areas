@@ -207,6 +207,26 @@ def gettop():
     session.close()
     return jsonify(data), 200
 
+@social.get("/topfollowed")
+def gettopfollowed():
+    session = Session()
+    user_id = get_jwt_identity()
+    follows = session.query(Follow).filter(Follow.user_id == user_id).all()
+    follows_id = []
+    for follow in follows:
+        follows_id.append(follow.followed_id)
+    data = []
+    followslikes= session.query(Like.polygon_id, func.count(Like.polygon_id)).filter(Like.user_id.in_(follows_id)).group_by(Like.polygon_id).all()
+    print(followslikes)
+    for l in followslikes:
+        name = session.query(Polygon.name).filter(Polygon.id == l[0]).first()
+        print(name)
+        data.append({'id': l[0],'name': name[0], 'score': l[1]})
+    data.sort(key=lambda x: x['score'], reverse=True)
+    data = data[:50]
+    session.close()
+    return jsonify(data), 200
+
 
 @social.get("/search/<value>")
 def search(value):
@@ -223,6 +243,6 @@ def search(value):
         data.append({'type': 'user', 'name': user.username, 'img': user.img})
     
     data.sort(key=lambda x: x['name'])
-    data = data[:10]
+    ''' data = data[:10] '''
     session.close()
     return jsonify({'results': data}), 200

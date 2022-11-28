@@ -277,7 +277,7 @@ function GreenMap({ indexes }) {
         } */
 				getTooltip={({ object }) =>
 					object && {
-						html: `<h2>${object.properties.id}</h2><div>${object.message}</div>`,
+						html: `<h2>${object.properties.name}</h2><div>${object.message}</div>`,
 						style: {
 							width: "7rem",
 							borderRadius: "0.5rem",

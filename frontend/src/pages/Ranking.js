@@ -32,6 +32,38 @@ const World50 = () => {
 		url: "/social/top",
 		method: "get",
 	});
+	const testranks = [
+		{
+			id: 11,
+			name: "Parco del Valentino",
+			score: 100,
+			position: 1,
+		},
+		{
+			id: 21,
+			name: "Parco Giacomo Leopardi",
+			score: 90,
+			position: 1,
+		},
+		{
+			id: 12,
+			name: "Parco La Tesoreria",
+			score: 80,
+			position: 1,
+		},
+		{
+			id: 59,
+			name: "Il Giardino Roccioso",
+			score: 70,
+			position: 2,
+		},
+		{
+			id: 42,
+			name: "National Park",
+			score: 11,
+			position: 2,
+		},
+	];
 	return (
 		<>
 			{/* <List>
@@ -70,6 +102,26 @@ const World50 = () => {
 	);
 };
 
+const Followed50 = () => {
+	const axiosPrivate = useAxiosPrivate();
+	const [ranks, error, loading, refetch] = useAxios({
+		axiosInstance: axiosPrivate,
+		url: "/social/topfollowed",
+		method: "get",
+	});
+
+	return (
+		<>
+			{loading && <Loader />}
+			{!loading && (
+				<ListContainer>
+					<RankList rank items={ranks}></RankList>
+				</ListContainer>
+			)}
+		</>
+	);
+};
+
 const ListContainer = styled.div`
 	width: 75%;
 	margin: 0 auto;
@@ -97,10 +149,6 @@ const Button = styled(BiMap)`
 		border: 3px solid var(--primary-green);
 	}
 `;
-
-const Followed50 = () => {
-	return <div>Followed50</div>;
-};
 
 const City50 = () => {
 	return <div>City50</div>;

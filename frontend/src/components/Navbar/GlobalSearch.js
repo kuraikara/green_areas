@@ -55,6 +55,11 @@ export default function GlobalSearch({ addFollow }) {
 			const response = await axiosPrivate.get("/social/search/" + value);
 			console.log(response.data);
 			setResults(response.data.results);
+			/* let data = response.data.results;
+			setResults([
+				data[data.length - 1],
+				{ type: "park", name: "Parco nazionale del Gran Paradiso" },
+			]); */
 			setLoading(false);
 		} catch (error) {
 			console.error(error);
@@ -112,11 +117,7 @@ export default function GlobalSearch({ addFollow }) {
 												) : (
 													<PolyIcon />
 												)}
-												<Text>
-													{item.name}asda najksnd knajsndjk nkajsndk nakjsnd
-													akjsnd aksjnd aksjdn askjnd aksjnd kajsnd kajsnd
-													kajsnd kjasnd
-												</Text>
+												<Text>{item.name}</Text>
 												<ArrowIcon />
 											</div>
 										</Item>

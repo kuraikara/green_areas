@@ -64,7 +64,7 @@ export default function Login() {
 				</Success>
 			) : (
 				<LoginBox>
-					<Title>Register</Title>
+					<Title>Sign up</Title>
 					<Form onSubmit={handleSubmit}>
 						<Label htmlFor="username">Username</Label>
 						<Input
@@ -99,7 +99,8 @@ export default function Login() {
 							placeholder="Repeat Password"
 							required
 						/>
-						<Button type="submit">Register</Button>
+						<Button type="submit">Sign up</Button>
+						<Link to="/login">You already have an account?</Link>
 					</Form>
 					{
 						<Error ref={errRef} aria-live="assertive">
@@ -127,9 +128,9 @@ const LoginBox = styled.div`
 	width: 100%;
 	max-width: 500px;
 	height: 100%;
-	max-height: 500px;
+	max-height: 600px;
 	border-radius: 1rem;
-	background: var(--primary-green);
+	background: var(--hover-green);
 	color: #fff;
 `;
 
@@ -143,7 +144,7 @@ const Form = styled.form`
 const Title = styled.h1`
 	font-size: 2.5rem;
 	font-weight: 700;
-	margin-bottom: 3rem;
+	margin-bottom: 2rem;
 `;
 
 const Input = styled.input`
@@ -160,12 +161,13 @@ const Label = styled.label`
 `;
 
 const Button = styled.button`
-	padding: 0.5rem 1rem;
+	padding: 0.6rem 2rem;
 	border: none;
-	border-radius: 0.25rem;
-	background-color: #333;
+	border-radius: 0.5rem;
+	background-color: var(--primary-green);
 	color: #fff;
 	font-weight: 700;
+	margin: 1rem 0;
 	cursor: pointer;
 `;
 

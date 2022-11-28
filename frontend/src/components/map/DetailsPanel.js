@@ -143,7 +143,7 @@ export default function DetailsPanel() {
 				<Loader />
 			) : (
 				<>
-					<div>{polygonDetails.properties.id}</div>
+					{/* <div>{polygonDetails.properties.id}</div> */}
 					<Name>{polygonDetails.properties.name}</Name>
 					<LikeShareButtons>
 						<Button>
@@ -161,29 +161,99 @@ export default function DetailsPanel() {
 							{copied && <SharedAlert>Copied!</SharedAlert>}
 						</Button>
 					</LikeShareButtons>
-					{followedLiking.length > 0 && (
-						<>
-							<FollowedLiking>
-								{followedLiking.map((user, index) => (
-									<>
-										{index != 0 && <>{", "}</>}
-										<FollowedLikingUser
-											key={index}
-											onClick={() => nav("/user/" + user)}
-										>
-											{user}
-										</FollowedLikingUser>
-									</>
-								))}
-								{" like this place"}
-							</FollowedLiking>
-						</>
-					)}
+					{
+						/* followedLiking */ ["umcgourty9"].length > 0 && (
+							<>
+								<FollowedLiking>
+									{
+										/* followedLiking */ ["umcgourty9"].map((user, index) => (
+											<>
+												{index != 0 && <>{", "}</>}
+												<FollowedLikingUser
+													key={index}
+													onClick={() => nav("/user/" + user)}
+												>
+													{user}
+												</FollowedLikingUser>
+											</>
+										))
+									}
+									{" like this place"}
+								</FollowedLiking>
+							</>
+						)
+					}
+					<Description>
+						Il parco del Valentino è un famoso parco pubblico di Torino, sito
+						lungo le rive del Po. È situato nel quartiere di San Salvario, a
+						ridosso del centro storico torinese. Confina: a est con la sponda
+						sinistra del fiume Po; a nord con corso Vittorio Emanuele II, dove
+						terminano i Murazzi;{" "}
+						<a href="https://it.wikipedia.org/wiki/Parco_del_Valentino">
+							Wikipedia
+						</a>
+					</Description>
+					<Info>
+						<Text>
+							<b>Indirizzo:</b> Corso Massimo d'Azeglio, 10126 Torino TO
+						</Text>
+					</Info>
+					<Info>
+						<Text>
+							<b>Reparti:</b> Area cani
+						</Text>
+					</Info>
+					<Info>
+						<Text>
+							<b>Orari:</b> Aperto 24 ore su 24
+						</Text>
+					</Info>
+					<Info>
+						<Text>
+							<b>Provincia:</b> Città Metropolitana di Torino
+						</Text>
+					</Info>
+					<Info>
+						<Text>
+							<b>Superficie:</b> 42,10 ettari
+						</Text>
+					</Info>
+					<Info>
+						<Text>
+							<b>Apertura:</b> Tutti i giorni
+						</Text>
+					</Info>
+					<Info>
+						<Text>
+							<b>Gestore:</b> Città di Torino
+						</Text>
+					</Info>
+					<Info>
+						<Text>
+							<b>Stato:</b> Italia
+						</Text>
+					</Info>
 				</>
 			)}
 		</CollapsiblePanel>
 	);
 }
+
+const Description = styled.div`
+	margin: 2rem 3rem;
+	text-align: left;
+`;
+
+const Label = styled.div`
+	margin: 10px 0;
+`;
+
+const Info = styled.div`
+	margin: 2rem 3rem;
+	text-align: left;
+`;
+
+const Text = styled.p``;
 
 const FollowedLiking = styled.div`
 	font-size: 1rem;

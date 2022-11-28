@@ -56,16 +56,32 @@ function Unauthorized() {
 	return (
 		<>
 			<Navbar back={true} />
-			<main>
-				<h2>Unauthorized</h2>
-				<p>You are not authorized to view this page.</p>
+			<main
+				style={{
+					textAlign: "center",
+					marginTop: "8rem",
+				}}
+			>
+				<h2 style={{ fontSize: "3rem" }}>Unauthorized</h2>
+				<p style={{ marginTop: "2rem" }}>
+					You are not authorized to view this page.
+				</p>
+				<Button to="/">Home</Button>
 			</main>
-			<nav>
-				<Link to="/">Home</Link>
-			</nav>
 		</>
 	);
 }
+
+const Button = styled.button`
+	padding: 0.6rem 2rem;
+	border: none;
+	border-radius: 0.5rem;
+	background-color: var(--primary-green);
+	color: #fff;
+	font-weight: 700;
+	margin: 2rem 0;
+	cursor: pointer;
+`;
 
 function About() {
 	return (

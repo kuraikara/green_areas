@@ -131,7 +131,7 @@ const Form = styled.form`
 
 const Title = styled.h1`
 	font-size: 2.5rem;
-	font-weight: 700;
+	font-weight: 900;
 	margin-bottom: 3rem;
 `;
 
@@ -149,12 +149,13 @@ const Label = styled.label`
 `;
 
 const Button = styled.button`
-	padding: 0.5rem 1rem;
+	padding: 0.6rem 2rem;
 	border: none;
-	border-radius: 0.25rem;
-	background-color: #333;
+	border-radius: 0.5rem;
+	background-color: var(--primary-green);
 	color: #fff;
 	font-weight: 700;
+	margin: 1rem 0;
 	cursor: pointer;
 `;
 

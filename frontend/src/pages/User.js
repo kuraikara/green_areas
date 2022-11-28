@@ -7,6 +7,7 @@ import Tabs from "../components/miscellaneous/Tabs";
 import useAuth from "../hooks/useAuth";
 import Navbar from "../components/Navbar";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import LikeLazy from "../components/user/LikeLazy";
 
 function User() {
 	const [tab, setTab] = useState(0);
@@ -37,7 +38,7 @@ function User() {
 					<Tabs>
 						<Likes tabname={"Likes"} username={user.username} />
 						<Follows tabname={"Follow"} username={user.username} />
-						<Loader tabname={"Prova"} />
+						<LikeLazy tabname={"Prova"} username={user.username} />
 					</Tabs>
 				</>
 			) : (
